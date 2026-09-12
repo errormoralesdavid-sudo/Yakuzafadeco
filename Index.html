@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tienda Online</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .producto {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        .producto img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .btn-comprar {
+            display: inline-block;
+            background-color: #25D366; /* Color verde WhatsApp */
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .btn-comprar:hover {
+            background-color: #1ebe57;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenido a mi Tienda</h1>
+
+    <div class="producto">
+        <img src="URL_DE_TU_IMAGEN.jpg" alt="Imagen del producto">
+        <h3>Nombre de tu Producto</h3>
+        <p>Breve descripción de lo excelente que es tu producto y por qué deberían comprarlo.</p>
+        <p><strong>Precio: $10.00</strong></p>
+        
+        <!-- Botón que conecta directo a WhatsApp con un mensaje listo -->
+        <a href="https://wa.me/TU_NUMERO_DE_TELEFONO?text=Hola,%20quiero%20comprar%20el%20producto:%20Nombre%20del%20Producto" class="btn-comprar" target="_blank">Comprar por WhatsApp</a>
+    </div>
+
+</body>
+</html>
