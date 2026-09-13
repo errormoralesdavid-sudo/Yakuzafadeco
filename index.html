@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yakuza Fight God - Tienda Online</title>
+    <title>Yakuza Fight Co. - Tienda Online</title>
     <style>
-        /* Estilos generales y fondo oscuro */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #0b0b0b;
@@ -15,7 +14,6 @@
             text-align: center;
         }
 
-        /* Animación de entrada */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -31,15 +29,16 @@
             color: #ff3333;
             text-shadow: 0px 0px 10px rgba(255, 51, 51, 0.5);
             margin-bottom: 5px;
+            font-size: 26px;
         }
 
         .subtitulo {
             animation: fadeInDown 1.2s ease-in-out;
             color: #cccccc;
             margin-bottom: 30px;
+            font-size: 14px;
         }
 
-        /* Cuadrícula de 2 columnas (izquierda y derecha) */
         .contenedor-tienda {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -50,11 +49,10 @@
 
         @media (max-width: 600px) {
             .contenedor-tienda {
-                grid-template-columns: 1fr; /* En pantallas muy pequeñas se adapta a 1 columna */
+                grid-template-columns: 1fr;
             }
         }
 
-        /* Tarjeta de producto */
         .producto {
             background: #161616;
             border: 1px solid #282828;
@@ -63,19 +61,22 @@
             box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
             text-align: left;
             animation: fadeInUp 1s ease-in-out;
-            transition: transform 0.3s ease;
-        }
-
-        .producto:hover {
-            transform: translateY(-5px);
-            border-color: #ff3333;
         }
 
         .producto img {
             width: 100%;
-            height: 140px;
+            height: 150px;
             object-fit: cover;
             border-radius: 6px;
+            background: #222;
+        }
+
+        /* Botón para cargar imagen desde la galería del teléfono de prueba */
+        .input-file-local {
+            display: block;
+            margin: 8px 0;
+            font-size: 11px;
+            color: #aaa;
         }
 
         .producto h3 {
@@ -97,7 +98,6 @@
             margin-bottom: 10px;
         }
 
-        /* Control de cantidad (- / +) */
         .cantidad-container {
             display: flex;
             align-items: center;
@@ -123,7 +123,6 @@
             background: #ff3333;
         }
 
-        /* Menú desplegable de pago */
         .dropdown {
             position: relative;
             display: block;
@@ -140,7 +139,6 @@
             font-weight: bold;
             cursor: pointer;
             text-align: center;
-            transition: background 0.2s;
         }
 
         .btn-comprar:hover {
@@ -175,27 +173,33 @@
 
         .show { display: block; }
 
-        /* Pie de página con Redes Sociales */
+        /* SECCIÓN DE REDES SOCIALES CORREGIDA (Diseño limpio y en columna o ajustado) */
         footer {
             margin-top: 40px;
-            padding: 20px;
+            padding: 20px 10px;
             border-top: 1px solid #222;
+        }
+
+        footer p {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 15px;
         }
 
         .redes-sociales {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .redes-sociales a {
             background: #1a1a1a;
             color: white;
-            padding: 10px 15px;
-            border-radius: 50px;
+            padding: 8px 14px;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 12px;
             border: 1px solid #333;
             transition: 0.3s;
         }
@@ -208,19 +212,21 @@
 </head>
 <body>
 
-    <h1>Yakuza Fight God</h1>
+    <h1>Yakuza Fight Co.</h1>
     <div class="subtitulo">Bienvenido a tu tienda oficial. Selecciona lo que deseas llevar:</div>
 
     <div class="contenedor-tienda">
 
-        <!-- PRODUCTO 1 (Izquierda) -->
+        <!-- PRODUCTO 1 -->
         <div class="producto">
-            <img src="URL_IMAGEN_1.jpg" alt="Producto 1">
+            <!-- Imagen y botón de prueba local -->
+            <img id="img-prod-1" src="" alt="Vista previa">
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'img-prod-1')">
+            
             <h3>Nombre Producto 1</h3>
             <p>Descripción corta del artículo.</p>
             <div class="precio">$10.00</div>
             
-            <!-- Selector de Cantidad -->
             <div class="cantidad-container">
                 <span>Cantidad:</span>
                 <div>
@@ -230,25 +236,26 @@
                 </div>
             </div>
 
-            <!-- Botón Plegable de Pago -->
             <div class="dropdown">
                 <button onclick="toggleDropdown(this)" class="btn-comprar">Comprar ▾</button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Pago Móvil', this)">📱 Pagar con Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Transferencia', this)">🏦 Pagar con Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Binance', this)">🪙 Pagar con Binance</a>
+                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Pago Móvil', this)">📱 Pago Móvil</a>
+                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Transferencia', this)">🏦 Transferencia</a>
+                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Binance', this)">🪙 Binance</a>
                 </div>
             </div>
         </div>
 
-        <!-- PRODUCTO 2 (Derecha) -->
+        <!-- PRODUCTO 2 -->
         <div class="producto">
-            <img src="URL_IMAGEN_2.jpg" alt="Producto 2">
+            <!-- Imagen y botón de prueba local -->
+            <img id="img-prod-2" src="" alt="Vista previa">
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'img-prod-2')">
+
             <h3>Nombre Producto 2</h3>
             <p>Descripción corta del artículo.</p>
             <div class="precio">$15.00</div>
             
-            <!-- Selector de Cantidad -->
             <div class="cantidad-container">
                 <span>Cantidad:</span>
                 <div>
@@ -258,13 +265,12 @@
                 </div>
             </div>
 
-            <!-- Botón Plegable de Pago -->
             <div class="dropdown">
                 <button onclick="toggleDropdown(this)" class="btn-comprar">Comprar ▾</button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Pago Móvil', this)">📱 Pagar con Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Transferencia', this)">🏦 Pagar con Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Binance', this)">🪙 Pagar con Binance</a>
+                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Pago Móvil', this)">📱 Pago Móvil</a>
+                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Transferencia', this)">🏦 Transferencia</a>
+                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Binance', this)">🪙 Binance</a>
                 </div>
             </div>
         </div>
@@ -275,34 +281,38 @@
     <footer>
         <p>Síguenos en nuestras redes:</p>
         <div class="redes-sociales">
-            <a href="https://wa.me/584123167126?text=Hola,%20vengo%20de%20la%20web" target="_blank">WhatsApp</a>
-            <a href="https://instagram.com" target="_blank">Instagram</a>
-            <a href="https://facebook.com" target="_blank">Facebook</a>
-            <a href="https://youtube.com" target="_blank">YouTube</a>
+            <a href="https://wa.me/584123167126?text=Hola,%20vengo%20de%20la%20web" target="_blank">💬 WhatsApp</a>
+            <a href="https://instagram.com" target="_blank">📸 Instagram</a>
+            <a href="https://facebook.com" target="_blank">📘 Facebook</a>
+            <a href="https://youtube.com" target="_blank">▶️ YouTube</a>
         </div>
     </footer>
 
-    <!-- SCRIPTS PARA FUNCIONALIDAD DE BOTONES Y CANTIDADES -->
     <script>
-        // Función para subir o bajar cantidad
+        // Función para cargar imagen temporal desde la galería del teléfono
+        function cargarImagenLocal(event, idImagen) {
+            let archivo = event.target.files[0];
+            if (archivo) {
+                let urlTemporal = URL.createObjectURL(archivo);
+                document.getElementById(idImagen).src = urlTemporal;
+            }
+        }
+
         function cambiarCantidad(btn, cambio) {
             let tarjeta = btn.closest('.producto');
             let spanVal = tarjeta.querySelector('.contador-val');
             let cantidad = parseInt(spanVal.textContent) + cambio;
-            if (cantidad < 1) cantidad = 1; // Mínimo 1
+            if (cantidad < 1) cantidad = 1;
             spanVal.textContent = cantidad;
         }
 
-        // Función para abrir/cerrar el menú de opciones de pago
         function toggleDropdown(btn) {
-            // Cierra otros menús abiertos primero
             document.querySelectorAll('.dropdown-content').forEach(content => {
                 if (content !== btn.nextElementSibling) content.classList.remove('show');
             });
             btn.nextElementSibling.classList.toggle('show');
         }
 
-        // Cerrar menú si hace clic fuera
         window.onclick = function(event) {
             if (!event.target.matches('.btn-comprar')) {
                 document.querySelectorAll('.dropdown-content').forEach(content => {
@@ -311,15 +321,14 @@
             }
         }
 
-        // Función para armar el mensaje de WhatsApp con la cantidad y el total exacto
         function enviarPedido(event, producto, precioUnitario, metodoPago, enlace) {
             event.preventDefault();
             let tarjeta = enlace.closest('.producto');
             let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
             let total = precioUnitario * cantidad;
-            let telefono = "584123167126"; // Tu número configurado
+            let telefono = "584123167126";
 
-            let mensaje = `Hola, Yakuza Fight God. Quiero comprar:\n\n📦 *${producto}*\n🔢 Cantidad: ${cantidad}\n💵 Total: $${total}.00\n💳 Método de pago: ${metodoPago}`;
+            let mensaje = `Hola, Yakuza Fight Co. Quiero comprar:\n\n📦 *${producto}*\n🔢 Cantidad: ${cantidad}\n💵 Total: $${total}.00\n💳 Método de pago: ${metodoPago}`;
             
             let urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWhatsApp, '_blank');
