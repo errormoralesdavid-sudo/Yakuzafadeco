@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yakuza Fight Co. - Tienda Online</title>
+    <title>Yakuza Fade Co. - Tienda Online</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #0b0b0b;
             color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
         }
 
@@ -29,20 +29,70 @@
             color: #ff3333;
             text-shadow: 0px 0px 10px rgba(255, 51, 51, 0.5);
             margin-bottom: 5px;
-            font-size: 26px;
+            font-size: 24px;
         }
 
         .subtitulo {
             animation: fadeInDown 1.2s ease-in-out;
             color: #cccccc;
-            margin-bottom: 30px;
-            font-size: 14px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
+        /* Barra de Búsqueda */
+        .buscador-container {
+            margin-bottom: 15px;
+            animation: fadeInDown 1.3s ease-in-out;
+        }
+
+        .buscador-container input {
+            width: 90%;
+            max-width: 400px;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background: #161616;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            text-align: center;
+        }
+
+        .buscador-container input:focus {
+            border-color: #ff3333;
+        }
+
+        /* Botones de Categorías / Filtros */
+        .filtros-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1.4s ease-in-out;
+        }
+
+        .btn-filtro {
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-filtro:hover, .btn-filtro.activo {
+            background: #ff3333;
+            border-color: #ff3333;
+        }
+
+        /* Cuadrícula de 2 columnas */
         .contenedor-tienda {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
             max-width: 700px;
             margin: 0 auto;
         }
@@ -57,7 +107,7 @@
             background: #161616;
             border: 1px solid #282828;
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
             text-align: left;
             animation: fadeInUp 1s ease-in-out;
@@ -65,55 +115,113 @@
 
         .producto img {
             width: 100%;
-            height: 150px;
+            height: 140px;
             object-fit: cover;
             border-radius: 6px;
             background: #222;
         }
 
-        /* Botón para cargar imagen desde la galería del teléfono de prueba */
         .input-file-local {
             display: block;
-            margin: 8px 0;
-            font-size: 11px;
+            margin: 6px 0;
+            font-size: 10px;
             color: #aaa;
         }
 
         .producto h3 {
-            font-size: 16px;
-            margin: 10px 0 5px 0;
+            font-size: 15px;
+            margin: 8px 0 4px 0;
             color: #fff;
         }
 
         .producto p {
-            font-size: 13px;
+            font-size: 12px;
             color: #b0b0b0;
-            margin: 0 0 10px 0;
+            margin: 0 0 8px 0;
         }
 
         .precio {
             font-weight: bold;
             color: #4cd137;
-            font-size: 15px;
-            margin-bottom: 10px;
+            font-size: 14px;
+            margin-bottom: 8px;
         }
+
+        /* Controles (Tallas y Cantidad) */
+        .opciones-grid {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-talla, .dropdown-pago {
+            position: relative;
+            flex: 1;
+        }
+
+        .btn-desplegable {
+            background-color: #222;
+            color: white;
+            border: 1px solid #333;
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-desplegable:hover {
+            background-color: #333;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #222;
+            width: 100%;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.6);
+            z-index: 10;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 2px;
+            border: 1px solid #333;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            display: block;
+            font-size: 11px;
+            text-align: left;
+            border-bottom: 1px solid #282828;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ff3333;
+        }
+
+        .show { display: block; }
 
         .cantidad-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #222;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 5px;
-            margin-bottom: 10px;
-            font-size: 13px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            border: 1px solid #333;
         }
 
         .cantidad-container button {
             background: #333;
             color: white;
             border: none;
-            padding: 2px 8px;
+            padding: 2px 6px;
             font-weight: bold;
             cursor: pointer;
             border-radius: 3px;
@@ -123,83 +231,50 @@
             background: #ff3333;
         }
 
-        .dropdown {
-            position: relative;
-            display: block;
-            width: 100%;
-        }
-
         .btn-comprar {
             background-color: #ff3333;
             color: white;
             border: none;
             width: 100%;
-            padding: 10px;
+            padding: 9px;
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
+            font-size: 13px;
         }
 
         .btn-comprar:hover {
             background-color: #cc0000;
         }
 
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #222;
-            min-width: 100%;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.4);
-            z-index: 1;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 2px;
-        }
-
-        .dropdown-content a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
-            font-size: 12px;
-            text-align: left;
-            border-bottom: 1px solid #333;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #333;
-        }
-
-        .show { display: block; }
-
-        /* SECCIÓN DE REDES SOCIALES CORREGIDA (Diseño limpio y en columna o ajustado) */
+        /* Pie de página */
         footer {
-            margin-top: 40px;
-            padding: 20px 10px;
+            margin-top: 30px;
+            padding: 15px 10px;
             border-top: 1px solid #222;
         }
 
         footer p {
-            font-size: 13px;
+            font-size: 12px;
             color: #aaa;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .redes-sociales {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
 
         .redes-sociales a {
             background: #1a1a1a;
             color: white;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 6px;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 11px;
             border: 1px solid #333;
             transition: 0.3s;
         }
@@ -212,23 +287,50 @@
 </head>
 <body>
 
-    <h1>Yakuza Fight Co.</h1>
-    <div class="subtitulo">Bienvenido a tu tienda oficial. Selecciona lo que deseas llevar:</div>
+    <h1>Yakuza Fade Co.</h1>
+    <div class="subtitulo">Barbería & Ropa Oficial. Selecciona lo que deseas llevar:</div>
 
-    <div class="contenedor-tienda">
+    <!-- BARRA DE BÚSQUEDA -->
+    <div class="buscador-container">
+        <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos..." onkeyup="filtrarProductos()">
+    </div>
 
-        <!-- PRODUCTO 1 -->
-        <div class="producto">
-            <!-- Imagen y botón de prueba local -->
+    <!-- BOTONES DE FILTRO / CATEGORÍAS -->
+    <div class="filtros-container">
+        <button class="btn-filtro activo" onclick="filtrarCategoria('todos')">Todos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('ropa')">Ropa</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('barberia')">Barbería</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('zapatos')">Zapatos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('accesorios')">Accesorios</button>
+    </div>
+
+    <div class="contenedor-tienda" id="listaProductos">
+
+        <!-- PRODUCTO 1 (Ropa - Con Talla) -->
+        <div class="producto" data-categoria="ropa" data-nombre="camisa yakuza fade">
             <img id="img-prod-1" src="" alt="Vista previa">
             <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'img-prod-1')">
             
-            <h3>Nombre Producto 1</h3>
-            <p>Descripción corta del artículo.</p>
-            <div class="precio">$10.00</div>
+            <h3>Camisa Yakuza Fade</h3>
+            <p>Camisa oficial de alta calidad.</p>
+            <div class="precio">$15.00</div>
             
+            <!-- Selector de Tallas y Cantidad en línea -->
+            <div class="opciones-grid">
+                <!-- Talla -->
+                <div class="dropdown-talla">
+                    <button onclick="toggleDropdown(this)" class="btn-desplegable">Talla: <span class="talla-elegida">M</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarTalla(event, 'S')">Talla S</a>
+                        <a href="#" onclick="seleccionarTalla(event, 'M')">Talla M</a>
+                        <a href="#" onclick="seleccionarTalla(event, 'L')">Talla L</a>
+                        <a href="#" onclick="seleccionarTalla(event, 'XL')">Talla XL</a>
+                    </div>
+                </div>
+            </div>
+
             <div class="cantidad-container">
-                <span>Cantidad:</span>
+                <span>Cant:</span>
                 <div>
                     <button onclick="cambiarCantidad(this, -1)">-</button>
                     <span class="contador-val">1</span>
@@ -236,28 +338,28 @@
                 </div>
             </div>
 
-            <div class="dropdown">
+            <!-- Botón de Pago Plegable -->
+            <div class="dropdown-pago dropdown">
                 <button onclick="toggleDropdown(this)" class="btn-comprar">Comprar ▾</button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Pago Móvil', this)">📱 Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Transferencia', this)">🏦 Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 1', 10, 'Binance', this)">🪙 Binance</a>
+                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Pago Móvil', this)">📱 Pago Móvil</a>
+                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Transferencia', this)">🏦 Transferencia</a>
+                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Binance', this)">🪙 Binance</a>
                 </div>
             </div>
         </div>
 
-        <!-- PRODUCTO 2 -->
-        <div class="producto">
-            <!-- Imagen y botón de prueba local -->
+        <!-- PRODUCTO 2 (Barbería - Sin Talla, por ejemplo) -->
+        <div class="producto" data-categoria="barberia" data-nombre="aceite para barba yakuza">
             <img id="img-prod-2" src="" alt="Vista previa">
             <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'img-prod-2')">
 
-            <h3>Nombre Producto 2</h3>
-            <p>Descripción corta del artículo.</p>
-            <div class="precio">$15.00</div>
+            <h3>Aceite para Barba</h3>
+            <p>Cuidado profesional para caballeros.</p>
+            <div class="precio">$10.00</div>
             
-            <div class="cantidad-container">
-                <span>Cantidad:</span>
+            <div class="cantidad-container" style="margin-top: 10px;">
+                <span>Cant:</span>
                 <div>
                     <button onclick="cambiarCantidad(this, -1)">-</button>
                     <span class="contador-val">1</span>
@@ -265,12 +367,12 @@
                 </div>
             </div>
 
-            <div class="dropdown">
+            <div class="dropdown-pago dropdown">
                 <button onclick="toggleDropdown(this)" class="btn-comprar">Comprar ▾</button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Pago Móvil', this)">📱 Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Transferencia', this)">🏦 Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Producto 2', 15, 'Binance', this)">🪙 Binance</a>
+                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Pago Móvil', this)">📱 Pago Móvil</a>
+                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Transferencia', this)">🏦 Transferencia</a>
+                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Binance', this)">🪙 Binance</a>
                 </div>
             </div>
         </div>
@@ -289,7 +391,7 @@
     </footer>
 
     <script>
-        // Función para cargar imagen temporal desde la galería del teléfono
+        // Cargar imagen local para pruebas
         function cargarImagenLocal(event, idImagen) {
             let archivo = event.target.files[0];
             if (archivo) {
@@ -298,6 +400,15 @@
             }
         }
 
+        // Seleccionar talla
+        function seleccionarTalla(event, talla) {
+            event.preventDefault();
+            let dropdown = event.target.closest('.dropdown-talla');
+            dropdown.querySelector('.talla-elegida').textContent = talla;
+            dropdown.querySelector('.dropdown-content').classList.remove('show');
+        }
+
+        // Cambiar cantidad
         function cambiarCantidad(btn, cambio) {
             let tarjeta = btn.closest('.producto');
             let spanVal = tarjeta.querySelector('.contador-val');
@@ -306,29 +417,67 @@
             spanVal.textContent = cantidad;
         }
 
+        // Menús desplegables inteligentes
         function toggleDropdown(btn) {
+            let menuActual = btn.nextElementSibling;
             document.querySelectorAll('.dropdown-content').forEach(content => {
-                if (content !== btn.nextElementSibling) content.classList.remove('show');
+                if (content !== menuActual) content.classList.remove('show');
             });
-            btn.nextElementSibling.classList.toggle('show');
+            menuActual.classList.toggle('show');
         }
 
         window.onclick = function(event) {
-            if (!event.target.matches('.btn-comprar')) {
+            if (!event.target.matches('.btn-desplegable') && !event.target.matches('.btn-comprar')) {
                 document.querySelectorAll('.dropdown-content').forEach(content => {
                     content.classList.remove('show');
                 });
             }
         }
 
+        // Filtrar por categoría
+        function filtrarCategoria(categoria) {
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+            event.target.classList.add('activo');
+
+            let productos = document.querySelectorAll('.producto');
+            productos.forEach(prod => {
+                if (categoria === 'todos' || prod.dataset.categoria === categoria) {
+                    prod.style.display = 'block';
+                } else {
+                    prod.style.display = 'none';
+                }
+            });
+        }
+
+        // Buscador en tiempo real
+        function filtrarProductos() {
+            let texto = document.getElementById('inputBuscador').value.toLowerCase();
+            let productos = document.querySelectorAll('.producto');
+            
+            productos.forEach(prod => {
+                let nombre = prod.dataset.nombre;
+                let descripcion = prod.querySelector('p').textContent.toLowerCase();
+                if (nombre.includes(texto) || descripcion.includes(texto)) {
+                    prod.style.display = 'block';
+                } else {
+                    prod.style.display = 'none';
+                }
+            });
+        }
+
+        // Enviar pedido completo a WhatsApp con talla, cantidad y método de pago
         function enviarPedido(event, producto, precioUnitario, metodoPago, enlace) {
             event.preventDefault();
             let tarjeta = enlace.closest('.producto');
             let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
             let total = precioUnitario * cantidad;
+            
+            let tallaSpan = tarjeta.querySelector('.talla-elegida');
+            let tallaTexto = tallaSpan ? `\n👕 Talla: ${tallaSpan.textContent}` : '';
+            
             let telefono = "584123167126";
 
-            let mensaje = `Hola, Yakuza Fight Co. Quiero comprar:\n\n📦 *${producto}*\n🔢 Cantidad: ${cantidad}\n💵 Total: $${total}.00\n💳 Método de pago: ${metodoPago}`;
+            let mensaje = `Hola, Yakuza Fade Co. Quiero comprar:\n\n📦 *${producto}*${tallaTexto}\n🔢 Cantidad: ${cantidad}\n💵 Total: $${total}.00\n💳 Método de pago: ${metodoPago}`;
             
             let urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWhatsApp, '_blank');
