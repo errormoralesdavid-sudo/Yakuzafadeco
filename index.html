@@ -3,150 +3,986 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yakuza Fade Co. - Tienda Oficial</title>
+    <title>Yakuza Fade Co. - Tienda Online</title>
+    
+    <!-- Enlace para PWA (App instalable) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff3333">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
         body {
-            background-color: #121212;
+            font-family: 'Arial', sans-serif;
+            background-color: #0b0b0b;
             color: #ffffff;
-            padding: 20px;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        header h1 {
-            color: #ff3333;
-            font-size: 2.2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        header p {
-            color: #888;
-            font-size: 0.95rem;
-        }
-        /* Contenedor de la Tienda */
-        .tienda-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        .producto-card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
+            margin: 0;
             padding: 15px;
-            border: 1px solid #333;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .producto-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: #f1f1f1;
             text-align: center;
+            padding-bottom: 90px;
         }
-        /* Carrusel de Imágenes */
-        .carrusel-container {
-            width: 100%;
-            height: 250px;
-            overflow: hidden;
-            border-radius: 8px;
-            background-color: #000;
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        h1 {
+            animation: fadeInDown 1s ease-in-out;
+            color: #ff3333;
+            text-shadow: 0px 0px 15px rgba(255, 51, 51, 0.6);
+            margin-bottom: 5px;
+            font-size: 26px;
+        }
+
+        .subtitulo {
+            animation: fadeInDown 1.2s ease-in-out;
+            color: #cccccc;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        /* Barra de Búsqueda */
+        .buscador-container {
+            margin-bottom: 15px;
+            animation: fadeInDown 1.3s ease-in-out;
+        }
+
+        .buscador-container input {
+            width: 90%;
+            max-width: 400px;
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background: #161616;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .buscador-container input:focus {
+            border-color: #ff3333;
+            box-shadow: 0px 0px 8px rgba(255,51,51,0.4);
+        }
+
+        /* Filtros */
+        .filtros-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1.4s ease-in-out;
         }
+
+        .btn-filtro {
+            background: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-filtro:hover, .btn-filtro.activo {
+            background: #ff3333;
+            border-color: #ff3333;
+            box-shadow: 0px 0px 10px rgba(255,51,51,0.5);
+        }
+
+        /* Cuadrícula de productos */
+        .contenedor-tienda {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor-tienda {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .producto {
+            background: #161616;
+            border: 1px solid #282828;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+            text-align: left;
+            animation: fadeInUp 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Etiqueta especial para Combos */
+        .badge-combo {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #ff3333;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            z-index: 10;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Carrusel */
+        .carrusel-container {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #222;
+        }
+
         .carrusel-slides {
             display: flex;
             width: 100%;
             height: 100%;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: thin;
+            transition: transform 0.3s ease-in-out;
         }
+
         .carrusel-slides img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             flex-shrink: 0;
-            scroll-snap-align: start;
         }
+
+        .carrusel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 4px;
+            z-index: 2;
+            transition: 0.2s;
+        }
+
+        .carrusel-btn.prev { left: 5px; }
+        .carrusel-btn.next { right: 5px; }
+        .carrusel-btn:hover { background: #ff3333; }
+
+        .input-file-local {
+            display: block;
+            margin: 6px 0;
+            font-size: 10px;
+            color: #888;
+        }
+
+        .producto h3 {
+            font-size: 15px;
+            margin: 8px 0 4px 0;
+            color: #fff;
+        }
+
+        .producto p {
+            font-size: 12px;
+            color: #aaa;
+            margin: 0 0 8px 0;
+        }
+
         .precio {
-            font-size: 1.2rem;
-            color: #4CAF50;
             font-weight: bold;
+            color: #4cd137;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        /* Controles (Tallas y Colores) */
+        .opciones-grid {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-contenedor {
+            position: relative;
+            flex: 1;
+            width: 100%;
+        }
+
+        .btn-desplegable {
+            background-color: #222;
+            color: white;
+            border: 1px solid #333;
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
             text-align: center;
+        }
+
+        .btn-desplegable:hover { background-color: #333; }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background-color: #1a1a1a;
+            width: 100%;
+            box-shadow: 0px -5px 15px rgba(0,0,0,0.8);
+            z-index: 99;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 4px;
+            border: 1px solid #444;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 9px;
+            text-decoration: none;
+            display: block;
+            font-size: 11px;
+            text-align: left;
+            border-bottom: 1px solid #282828;
+        }
+
+        .dropdown-content a:hover { background-color: #ff3333; }
+        .show { display: block !important; }
+
+        .cantidad-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #222;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            border: 1px solid #333;
+        }
+
+        .cantidad-container button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 3px 9px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .cantidad-container button:hover { background: #ff3333; }
+
+        .btn-agregar-carrito {
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .btn-agregar-carrito:hover { background-color: #cc0000; transform: scale(0.98); }
+
+        /* ANIMACIÓN DE VUELO AL CARRITO */
+        .flying-item {
+            position: fixed;
+            z-index: 9999;
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ff3333;
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            pointer-events: none;
+            box-shadow: 0px 0px 15px rgba(255,51,51,0.8);
+        }
+
+        /* BARRA FLOTANTE DEL CARRITO */
+        .carrito-flotante {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #141414;
+            border-top: 2px solid #ff3333;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px -5px 25px rgba(0,0,0,0.9);
+            z-index: 1000;
+            box-sizing: border-box;
+            animation: fadeInUp 0.5s ease-in-out;
+        }
+
+        .carrito-info {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ddd;
+        }
+
+        .btn-ver-carrito {
+            background: #ff3333;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            box-shadow: 0px 0px 10px rgba(255,51,51,0.5);
+            transition: 0.2s;
+        }
+
+        .btn-ver-carrito:hover { background: #cc0000; transform: scale(1.05); }
+
+        /* MODAL DE FACTURA */
+        .modal-carrito {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-contenido {
+            background: linear-gradient(145deg, #181818, #111111);
+            padding: 22px;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 420px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid #333;
+            box-shadow: 0px 10px 30px rgba(255, 51, 51, 0.2);
+            text-align: left;
+            animation: modalPop 0.3s ease-out;
+        }
+
+        .modal-contenido h2 {
+            color: #ff3333;
+            margin-top: 0;
+            font-size: 19px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 10px;
+        }
+
+        .item-carrito {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #222;
+            font-size: 12px;
+        }
+
+        .btn-eliminar {
+            background: #222;
+            color: #ff3333;
+            border: 1px solid #444;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-eliminar:hover { background: #ff3333; color: white; border-color: #ff3333; }
+
+        .total-modal {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: right;
+            margin: 15px 0;
+            color: #4cd137;
+            background: #111;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #222;
+        }
+
+        .opciones-pago-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-enviar-pedido {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            transition: 0.2s;
+            box-shadow: 0px 4px 10px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-enviar-pedido:hover { background: #1ebe5d; transform: scale(1.01); }
+
+        .btn-cerrar-modal {
+            background: #222;
+            color: #aaa;
+            border: 1px solid #444;
+            padding: 9px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-cerrar-modal:hover { background: #333; color: white; }
+
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            padding: 20px 10px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        footer p {
+            font-size: 12px;
+            color: #777;
             margin-bottom: 12px;
         }
-        .btn-comprar {
-            display: block;
-            width: 100%;
-            background-color: #25D366;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s;
+
+        .redes-sociales {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .btn-comprar:hover {
-            background-color: #1ebe5d;
+
+        .redes-sociales a {
+            background: #161616;
+            color: #ccc;
+            padding: 7px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 11px;
+            border: 1px solid #282828;
+            transition: 0.3s;
+        }
+
+        .redes-sociales a:hover {
+            background: #ff3333;
+            color: white;
+            border-color: #ff3333;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Yakuza Fade Co.</h1>
-        <p>Catálogo y Estilo Urbano</p>
-    </header>
+    <h1>Yakuza Fade Co.</h1>
+    <div class="subtitulo">Barbería, Ropa Oficial & Combos. ¡Arma tu carrito!</div>
 
-    <div class="tienda-container">
-        
-        <!-- ========================================== -->
-        <!-- PRODUCTO 1: TU GUÍA VISUAL (Canguro real)  -->
-        <!-- ========================================== -->
-        <div class="producto-card">
-            <h3>Canguro Deportivo</h3>
-            
+    <!-- BARRA DE BÚSQUEDA -->
+    <div class="buscador-container">
+        <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos o combos..." onkeyup="filtrarProductos()">
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filtros-container">
+        <button class="btn-filtro activo" onclick="filtrarCategoria('todos', event)">Todos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('combos', event)">🔥 Combos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('ropa', event)">Ropa</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('medias', event)">🧦 Medias</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('barberia', event)">Barbería</button>
+    </div>
+
+    <div class="contenedor-tienda" id="listaProductos">
+
+        <!-- COMBO 1 -->
+        <div class="producto" data-categoria="combos" data-nombre="combo yakuza total camisa medias">
+            <div class="badge-combo">¡AHORRA 20%!</div>
             <div class="carrusel-container">
-                <div class="carrusel-slides">
-                    <!-- Aquí está tu enlace directo de Catbox -->
-                    <img src="https://files.catbox.moe/pm3s1q.jpg" alt="Canguro Deportivo">
-                    <!-- Si le quieres agregar más fotos a este producto, solo copia otra línea <img> aquí abajo -->
+                <div class="carrusel-slides" id="slides-combo1">
+                    <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400" alt="Combo">
+                    <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400" alt="Combo 2">
+                </div>
+                <button class="carrusel-btn prev" onclick="moverCarrusel('slides-combo1', -1)">❮</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel('slides-combo1', 1)">❯</button>
+            </div>
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-combo1')">
+            
+            <h3>🔥 Combo Yakuza Total (Camisa + Medias)</h3>
+            <p>Incluye 1 Camisa oficial + 1 Par de Medias de diseño.</p>
+            <div class="precio">$20.00</div>
+            
+            <div class="opciones-grid">
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla Camisa: <span class="talla-elegida">M</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'S')">S</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'M')">M</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'L')">L</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'XL')">XL</a>
+                    </div>
+                </div>
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Color: <span class="color-elegido">Negro</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Negro')">Negro</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Rojo')">Rojo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="precio">$7.86</div>
-            <a href="https://wa.me/?text=Hola,%20quiero%20comprar%20el%20Canguro%20Deportivo" class="btn-comprar" target="_blank">Pedir por WhatsApp</a>
+            <div class="cantidad-container">
+                <span>Cant:</span>
+                <div>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
+                    <span class="contador-val">1</span>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Combo Yakuza Total', 20, true)">🛒 Añadir al Carrito</button>
         </div>
 
-        <!-- ========================================== -->
-        <!-- PRODUCTO 2: PLANTILLA PARA NUEVOS ARTÍCULOS-->
-        <!-- ========================================== -->
-        <div class="producto-card">
-            <h3>Nombre de tu Nuevo Producto</h3>
-            
+        <!-- PRODUCTO 2 (Camisa) -->
+        <div class="producto" data-categoria="ropa" data-nombre="camisa yakuza fade">
             <div class="carrusel-container">
-                <div class="carrusel-slides">
-                    <!-- Cambia este enlace por el que te dé Catbox para tu siguiente producto -->
-                    <img src="https://files.catbox.moe/pm3s1q.jpg" alt="Nuevo Producto">
+                <div class="carrusel-slides" id="slides-1">
+                    <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400" alt="Camisa">
+                    <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400" alt="Camisa 2">
+                </div>
+                <button class="carrusel-btn prev" onclick="moverCarrusel('slides-1', -1)">❮</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel('slides-1', 1)">❯</button>
+            </div>
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-1')">
+            
+            <h3>Camisa Yakuza Fade</h3>
+            <p>Camisa oficial de alta calidad con dragón.</p>
+            <div class="precio">$15.00</div>
+            
+            <div class="opciones-grid">
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla: <span class="talla-elegida">M</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'S')">Talla S</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'M')">Talla M</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'L')">Talla L</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'XL')">Talla XL</a>
+                    </div>
+                </div>
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Color: <span class="color-elegido">Negro</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Negro')">Negro</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Rojo')">Rojo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="precio">$0.00</div>
-            <a href="#" class="btn-comprar" target="_blank">Pedir por WhatsApp</a>
+            <div class="cantidad-container">
+                <span>Cant:</span>
+                <div>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
+                    <span class="contador-val">1</span>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Camisa Yakuza Fade', 15, true)">🛒 Añadir al Carrito</button>
+        </div>
+
+        <!-- PRODUCTO 3 (Medias) -->
+        <div class="producto" data-categoria="medias" data-nombre="medias yakuza urbanas">
+            <div class="badge-combo">¡NUEVO!</div>
+            <div class="carrusel-container">
+                <div class="carrusel-slides" id="slides-medias">
+                    <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400" alt="Medias">
+                    <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400" alt="Medias 2">
+                </div>
+                <button class="carrusel-btn prev" onclick="moverCarrusel('slides-medias', -1)">❮</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel('slides-medias', 1)">❯</button>
+            </div>
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-medias')">
+            
+            <h3>Medias Urbanas Yakuza</h3>
+            <p>Medias cómodas y deportivas con estilo streetwear.</p>
+            <div class="precio">$5.00</div>
+            
+            <div class="opciones-grid">
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla: <span class="talla-elegida">Única</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, '35-38')">35 - 38</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, '39-42')">39 - 42</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Única')">Única (Estándar)</a>
+                    </div>
+                </div>
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Color: <span class="color-elegido">Negro/Rojo</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Negro/Rojo')">Negro/Rojo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cantidad-container">
+                <span>Cant:</span>
+                <div>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
+                    <span class="contador-val">1</span>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Medias Urbanas Yakuza', 5, true)">🛒 Añadir al Carrito</button>
+        </div>
+
+        <!-- PRODUCTO 4 (Barbería) -->
+        <div class="producto" data-categoria="barberia" data-nombre="aceite para barba yakuza">
+            <div class="carrusel-container">
+                <div class="carrusel-slides" id="slides-2">
+                    <img src="https://images.unsplash.com/photo-1621607512214-68297480165e?w=400" alt="Aceite">
+                    <img src="https://images.unsplash.com/photo-1517832606293-7ae2a73c912f?w=400" alt="Aceite 2">
+                </div>
+                <button class="carrusel-btn prev" onclick="moverCarrusel('slides-2', -1)">❮</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel('slides-2', 1)">❯</button>
+            </div>
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-2')">
+
+            <h3>Aceite para Barba</h3>
+            <p>Cuidado profesional para caballeros.</p>
+            <div class="precio">$10.00</div>
+            
+            <div class="cantidad-container" style="margin-top: 10px;">
+                <span>Cant:</span>
+                <div>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
+                    <span class="contador-val">1</span>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-carrito" style="margin-top: 8px;" onclick="agregarAlCarrito(event, this, 'Aceite para Barba', 10, false)">🛒 Añadir al Carrito</button>
         </div>
 
     </div>
+
+    <!-- BARRA FLOTANTE -->
+    <div class="carrito-flotante" id="barraCarrito" style="display: none;">
+        <div class="carrito-info">
+            🛒 Carrito: <span id="contadorCarritoTotal">0</span> prod. | <span id="montoTotalCarrito" style="color: #4cd137; font-size:15px;">$0</span>
+        </div>
+        <button class="btn-ver-carrito" id="btnVerCarritoAnimado" onclick="abrirModalCarrito()">Ver Factura</button>
+    </div>
+
+    <!-- MODAL DE FACTURA -->
+    <div class="modal-carrito" id="modalCarrito">
+        <div class="modal-contenido">
+            <h2>🧾 Resumen de Pedido</h2>
+            <div id="listaItemsModal"></div>
+            <div class="total-modal">
+                Total a Pagar: $<span id="modalMontoTotal">0</span>
+            </div>
+            
+            <div style="font-size: 11px; margin-bottom: 6px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;">Selecciona método de pago:</div>
+            <div class="opciones-pago-modal">
+                <button class="btn-enviar-pedido" onclick="enviarPedidoWhatsApp('Pago Móvil')">📱 Pagar con Pago Móvil</button>
+                <button class="btn-enviar-pedido" onclick="enviarPedidoWhatsApp('Transferencia')">🏦 Pagar con Transferencia</button>
+                <button class="btn-enviar-pedido" onclick="enviarPedidoWhatsApp('Binance')">🪙 Pagar con Binance</button>
+            </div>
+
+            <button class="btn-cerrar-modal" onclick="cerrarModalCarrito()">Seguir Comprando</button>
+        </div>
+    </div>
+
+    <!-- FOOTER CON TODAS LAS REDES (INCLUYENDO TIKTOK) -->
+    <footer>
+        <p>Yakuza Fade Co. Todos los derechos reservados.</p>
+        <div class="redes-sociales">
+            <a href="https://wa.me/584123167126?text=Hola,%20vengo%20de%20la%20web" target="_blank">💬 WhatsApp</a>
+            <a href="https://tiktok.com" target="_blank">🎵 TikTok</a>
+            <a href="https://instagram.com" target="_blank">📸 Instagram</a>
+            <a href="https://facebook.com" target="_blank">📘 Facebook</a>
+            <a href="https://youtube.com" target="_blank">▶️ YouTube</a>
+        </div>
+    </footer>
+
+    <script>
+        let carrito = [];
+
+        const indicesCarrusel = {};
+        function moverCarrusel(idCarrusel, direccion) {
+            if (!indicesCarrusel[idCarrusel]) indicesCarrusel[idCarrusel] = 0;
+            let contenedorSlides = document.getElementById(idCarrusel);
+            let totalImgs = contenedorSlides.children.length;
+            
+            indicesCarrusel[idCarrusel] += direccion;
+            if (indicesCarrusel[idCarrusel] >= totalImgs) indicesCarrusel[idCarrusel] = 0;
+            else if (indicesCarrusel[idCarrusel] < 0) indicesCarrusel[idCarrusel] = totalImgs - 1;
+            
+            let desplazamiento = -indicesCarrusel[idCarrusel] * 100;
+            contenedorSlides.style.transform = `translateX(${desplazamiento}%)`;
+        }
+
+        function cargarImagenLocal(event, idCarrusel) {
+            let archivo = event.target.files[0];
+            if (archivo) {
+                let urlTemporal = URL.createObjectURL(archivo);
+                let contenedorSlides = document.getElementById(idCarrusel);
+                if(contenedorSlides && contenedorSlides.children[0]) {
+                    contenedorSlides.children[0].src = urlTemporal;
+                    indicesCarrusel[idCarrusel] = 0;
+                    contenedorSlides.style.transform = `translateX(0%)`;
+                }
+            }
+        }
+
+        function seleccionarOpcion(event, elementoLink, valor) {
+            event.preventDefault();
+            let dropdown = elementoLink.closest('.dropdown-contenedor');
+            let spanDestino = dropdown.querySelector('.talla-elegida') || dropdown.querySelector('.color-elegido');
+            if(spanDestino) {
+                spanDestino.textContent = valor;
+            }
+            dropdown.querySelector('.dropdown-content').classList.remove('show');
+        }
+
+        function cambiarCantidad(btn, cambio) {
+            let tarjeta = btn.closest('.producto');
+            let spanVal = tarjeta.querySelector('.contador-val');
+            let cantidad = parseInt(spanVal.textContent) + cambio;
+            if (cantidad < 1) cantidad = 1;
+            spanVal.textContent = cantidad;
+        }
+
+        function toggleDropdown(event, btn) {
+            event.stopPropagation();
+            let menuActual = btn.nextElementSibling;
+            document.querySelectorAll('.dropdown-content').forEach(content => {
+                if (content !== menuActual) content.classList.remove('show');
+            });
+            menuActual.classList.toggle('show');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-desplegable')) {
+                document.querySelectorAll('.dropdown-content').forEach(content => {
+                    content.classList.remove('show');
+                });
+            }
+        }
+
+        function filtrarCategoria(categoria, event) {
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
+            event.target.classList.add('activo');
+
+            let productos = document.querySelectorAll('.producto');
+            productos.forEach(prod => {
+                if (categoria === 'todos' || prod.dataset.categoria === categoria) {
+                    prod.style.display = 'block';
+                } else {
+                    prod.style.display = 'none';
+                }
+            });
+        }
+
+        function filtrarProductos() {
+            let texto = document.getElementById('inputBuscador').value.toLowerCase();
+            let productos = document.querySelectorAll('.producto');
+            
+            productos.forEach(prod => {
+                let nombre = prod.dataset.nombre;
+                let descripcion = prod.querySelector('p').textContent.toLowerCase();
+                if (nombre.includes(texto) || descripcion.includes(texto)) {
+                    prod.style.display = 'block';
+                } else {
+                    prod.style.display = 'none';
+                }
+            });
+        }
+
+        function agregarAlCarrito(event, btn, nombreProducto, precioUnitario, tieneOpciones) {
+            let tarjeta = btn.closest('.producto');
+            let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
+            
+            let talla = 'Única';
+            let color = 'Estándar';
+
+            let spanTalla = tarjeta.querySelector('.talla-elegida');
+            let spanColor = tarjeta.querySelector('.color-elegido');
+
+            if (spanTalla) talla = spanTalla.textContent;
+            if (spanColor) color = spanColor.textContent;
+
+            let detalleVariacion = `Talla: ${talla} | Color: ${color}`;
+
+            let imgElement = tarjeta.querySelector('.carrusel-slides img');
+            let rectImg = imgElement.getBoundingClientRect();
+            let btnRect = document.getElementById('btnVerCarritoAnimado').getBoundingClientRect();
+
+            let flyer = document.createElement('img');
+            flyer.src = imgElement.src;
+            flyer.className = 'flying-item';
+            flyer.style.left = rectImg.left + 'px';
+            flyer.style.top = rectImg.top + 'px';
+            document.body.appendChild(flyer);
+
+            setTimeout(() => {
+                flyer.style.left = btnRect.left + 'px';
+                flyer.style.top = btnRect.top + 'px';
+                flyer.style.width = '15px';
+                flyer.style.height = '15px';
+                flyer.style.opacity = '0.4';
+            }, 50);
+
+            setTimeout(() => {
+                flyer.remove();
+            }, 850);
+
+            let itemExistente = carrito.find(item => item.nombre === nombreProducto && item.variacion === detalleVariacion);
+            if (itemExistente) {
+                itemExistente.cantidad += cantidad;
+            } else {
+                carrito.push({
+                    nombre: nombreProducto,
+                    precio: precioUnitario,
+                    cantidad: cantidad,
+                    variacion: detalleVariacion
+                });
+            }
+
+            actualizarBarraCarrito();
+
+            btn.textContent = "¡Agregado! ✓";
+            btn.style.background = "#4cd137";
+            setTimeout(() => {
+                btn.textContent = "🛒 Añadir al Carrito";
+                btn.style.background = "#ff3333";
+            }, 1000);
+        }
+
+        function actualizarBarraCarrito() {
+            let totalItems = 0;
+            let montoTotal = 0;
+
+            carrito.forEach(item => {
+                totalItems += item.cantidad;
+                montoTotal += (item.precio * item.cantidad);
+            });
+
+            document.getElementById('contadorCarritoTotal').textContent = totalItems;
+            document.getElementById('montoTotalCarrito').textContent = '$' + montoTotal;
+            document.getElementById('modalMontoTotal').textContent = montoTotal;
+
+            let barra = document.getElementById('barraCarrito');
+            if (totalItems > 0) {
+                barra.style.display = 'flex';
+            } else {
+                barra.style.display = 'none';
+            }
+        }
+
+        function abrirModalCarrito() {
+            let contenedorModal = document.getElementById('listaItemsModal');
+            contenedorModal.innerHTML = '';
+
+            if (carrito.length === 0) {
+                contenedorModal.innerHTML = '<p style="text-align:center; color:#888;">Tu carrito está vacío.</p>';
+            } else {
+                carrito.forEach((item, index) => {
+                    let subtotal = item.precio * item.cantidad;
+                    contenedorModal.innerHTML += `
+                        <div class="item-carrito">
+                            <div>
+                                <strong style="color:white; font-size:13px;">${item.nombre}</strong><br>
+                                <small style="color:#aaa;">${item.variacion} | Cant: ${item.cantidad}</small><br>
+                                <span style="color: #4cd137; font-weight:bold;">$${subtotal}</span>
+                            </div>
+                            <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})">✕</button>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('modalCarrito').style.display = 'flex';
+        }
+
+        function cerrarModalCarrito() {
+            document.getElementById('modalCarrito').style.display = 'none';
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarBarraCarrito();
+            abrirModalCarrito();
+        }
+
+        function enviarPedidoWhatsApp(metodoPago) {
+            if (carrito.length === 0) return;
+
+            let telefono = "584123167126";
+            let mensaje = "🔥 *YAKUZA FADE CO. - NUEVO PEDIDO* 🔥\n\n";
+            let montoTotal = 0;
+
+            carrito.forEach(item => {
+                let subtotal = item.precio * item.cantidad;
+                montoTotal += subtotal;
+                mensaje += `▪️ *${item.nombre}*\n   ${item.variacion} | Cant: ${item.cantidad} x $${item.precio} = $${subtotal}\n\n`;
+            });
+
+            mensaje += `💵 *TOTAL A PAGAR: $${montoTotal}*\n💳 *Método de pago:* ${metodoPago}`;
+
+            let urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+    </script>
 
 </body>
 </html>
