@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yakuza Fade Co. - Tienda Online</title>
     
-    <!-- Enlace para que sea instalable como App en el teléfono -->
+    <!-- Enlace para instalar como App en el teléfono -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff3333">
 
@@ -153,6 +153,7 @@
             cursor: pointer;
             font-size: 12px;
             border-radius: 3px;
+            z-index: 2;
         }
 
         .carrusel-btn.prev { left: 5px; }
@@ -192,12 +193,13 @@
             margin-bottom: 8px;
         }
 
-        .dropdown-talla, .dropdown-pago {
+        .dropdown-contenedor {
             position: relative;
             flex: 1;
+            width: 100%;
         }
 
-        .btn-desplegable {
+        .btn-desplegable, .btn-comprar {
             background-color: #222;
             color: white;
             border: 1px solid #333;
@@ -210,33 +212,42 @@
             text-align: center;
         }
 
-        .btn-desplegable:hover { background-color: #333; }
+        .btn-comprar {
+            background-color: #ff3333;
+            border: none;
+        }
 
+        .btn-desplegable:hover { background-color: #333; }
+        .btn-comprar:hover { background-color: #cc0000; }
+
+        /* Menú desplegable corregido */
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: #222;
+            bottom: 100%; /* Se despliega hacia arriba para que no lo tape la tarjeta */
+            left: 0;
+            background-color: #1a1a1a;
             width: 100%;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.6);
-            z-index: 10;
+            box-shadow: 0px -5px 15px rgba(0,0,0,0.8);
+            z-index: 99;
             border-radius: 5px;
             overflow: hidden;
-            margin-top: 2px;
-            border: 1px solid #333;
+            margin-bottom: 4px;
+            border: 1px solid #444;
         }
 
         .dropdown-content a {
             color: white;
-            padding: 8px;
+            padding: 10px;
             text-decoration: none;
             display: block;
-            font-size: 11px;
+            font-size: 12px;
             text-align: left;
             border-bottom: 1px solid #282828;
         }
 
         .dropdown-content a:hover { background-color: #ff3333; }
-        .show { display: block; }
+        .show { display: block !important; }
 
         .cantidad-container {
             display: flex;
@@ -254,28 +265,13 @@
             background: #333;
             color: white;
             border: none;
-            padding: 2px 6px;
+            padding: 2px 8px;
             font-weight: bold;
             cursor: pointer;
             border-radius: 3px;
         }
 
         .cantidad-container button:hover { background: #ff3333; }
-
-        .btn-comprar {
-            background-color: #ff3333;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 9px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        .btn-comprar:hover { background-color: #cc0000; }
 
         /* Pie de página */
         footer {
@@ -326,11 +322,11 @@
 
     <!-- BOTONES DE FILTRO / CATEGORÍAS -->
     <div class="filtros-container">
-        <button class="btn-filtro activo" onclick="filtrarCategoria('todos')">Todos</button>
-        <button class="btn-filtro" onclick="filtrarCategoria('ropa')">Ropa</button>
-        <button class="btn-filtro" onclick="filtrarCategoria('barberia')">Barbería</button>
-        <button class="btn-filtro" onclick="filtrarCategoria('zapatos')">Zapatos</button>
-        <button class="btn-filtro" onclick="filtrarCategoria('accesorios')">Accesorios</button>
+        <button class="btn-filtro activo" onclick="filtrarCategoria('todos', event)">Todos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('ropa', event)">Ropa</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('barberia', event)">Barbería</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('zapatos', event)">Zapatos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('accesorios', event)">Accesorios</button>
     </div>
 
     <div class="contenedor-tienda" id="listaProductos">
@@ -341,8 +337,8 @@
             <!-- Carrusel de fotos -->
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-1">
-                    <img src="" alt="Foto 1">
-                    <img src="" alt="Foto 2">
+                    <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400" alt="Foto 1">
+                    <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400" alt="Foto 2">
                 </div>
                 <button class="carrusel-btn prev" onclick="moverCarrusel('slides-1', -1)">❮</button>
                 <button class="carrusel-btn next" onclick="moverCarrusel('slides-1', 1)">❯</button>
@@ -354,8 +350,9 @@
             <div class="precio">$15.00</div>
             
             <div class="opciones-grid">
-                <div class="dropdown-talla">
-                    <button onclick="toggleDropdown(this)" class="btn-desplegable">Talla: <span class="talla-elegida">M</span> ▾</button>
+                <!-- Talla -->
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla: <span class="talla-elegida">M</span> ▾</button>
                     <div class="dropdown-content">
                         <a href="#" onclick="seleccionarTalla(event, 'S')">Talla S</a>
                         <a href="#" onclick="seleccionarTalla(event, 'M')">Talla M</a>
@@ -368,18 +365,19 @@
             <div class="cantidad-container">
                 <span>Cant:</span>
                 <div>
-                    <button onclick="cambiarCantidad(this, -1)">-</button>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
                     <span class="contador-val">1</span>
-                    <button onclick="cambiarCantidad(this, 1)">+</button>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
                 </div>
             </div>
 
-            <div class="dropdown-pago dropdown">
-                <button onclick="toggleDropdown(this)" class="btn-comprar">Comprar ▾</button>
+            <!-- Menú de Pago -->
+            <div class="dropdown-contenedor">
+                <button type="button" onclick="toggleDropdown(event, this)" class="btn-comprar">Comprar ▾</button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Pago Móvil', this)">📱 Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Transferencia', this)">🏦 Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Binance', this)">🪙 Binance</a>
+                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Pago Móvil')">📱 Pago Móvil</a>
+                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Transferencia')">🏦 Transferencia</a>
+                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Binance')">🪙 Binance</a>
                 </div>
             </div>
         </div>
@@ -389,8 +387,8 @@
             
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-2">
-                    <img src="" alt="Foto 1">
-                    <img src="" alt="Foto 2">
+                    <img src="https://images.unsplash.com/photo-1621607512214-68297480165e?w=400" alt="Foto 1">
+                    <img src="https://images.unsplash.com/photo-1517832606293-7ae2a73c912f?w=400" alt="Foto 2">
                 </div>
                 <button class="carrusel-btn prev" onclick="moverCarrusel('slides-2', -1)">❮</button>
                 <button class="carrusel-btn next" onclick="moverCarrusel('slides-2', 1)">❯</button>
@@ -404,18 +402,18 @@
             <div class="cantidad-container" style="margin-top: 10px;">
                 <span>Cant:</span>
                 <div>
-                    <button onclick="cambiarCantidad(this, -1)">-</button>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
                     <span class="contador-val">1</span>
-                    <button onclick="cambiarCantidad(this, 1)">+</button>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
                 </div>
             </div>
 
-            <div class="dropdown-pago dropdown">
-                <button onclick="toggleDropdown(this)" class="btn-comprar">Comprar ▾</button>
+            <div class="dropdown-contenedor" style="margin-top: 8px;">
+                <button type="button" onclick="toggleDropdown(event, this)" class="btn-comprar">Comprar ▾</button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Pago Móvil', this)">📱 Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Transferencia', this)">🏦 Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Binance', this)">🪙 Binance</a>
+                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Pago Móvil')">📱 Pago Móvil</a>
+                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Transferencia')">🏦 Transferencia</a>
+                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Binance')">🪙 Binance</a>
                 </div>
             </div>
         </div>
@@ -455,9 +453,10 @@
             if (archivo) {
                 let urlTemporal = URL.createObjectURL(archivo);
                 let contenedorSlides = document.getElementById(idCarrusel);
-                // Asigna la foto a la primera imagen del carrusel para probar
-                if(contenedorSlides.children[0]) {
+                if(contenedorSlides && contenedorSlides.children[0]) {
                     contenedorSlides.children[0].src = urlTemporal;
+                    indicesCarrusel[idCarrusel] = 0;
+                    contenedorSlides.style.transform = `translateX(0%)`;
                 }
             }
         }
@@ -465,7 +464,7 @@
         // Seleccionar talla
         function seleccionarTalla(event, talla) {
             event.preventDefault();
-            let dropdown = event.target.closest('.dropdown-talla');
+            let dropdown = event.target.closest('.dropdown-contenedor');
             dropdown.querySelector('.talla-elegida').textContent = talla;
             dropdown.querySelector('.dropdown-content').classList.remove('show');
         }
@@ -479,15 +478,20 @@
             spanVal.textContent = cantidad;
         }
 
-        // Menús desplegables
-        function toggleDropdown(btn) {
+        // Menús desplegables inteligentes (abre y cierra sin cerrarse al instante)
+        function toggleDropdown(event, btn) {
+            event.stopPropagation();
             let menuActual = btn.nextElementSibling;
+            
+            // Cierra los demás abiertos
             document.querySelectorAll('.dropdown-content').forEach(content => {
                 if (content !== menuActual) content.classList.remove('show');
             });
+            
             menuActual.classList.toggle('show');
         }
 
+        // Cerrar menú al hacer clic fuera
         window.onclick = function(event) {
             if (!event.target.matches('.btn-desplegable') && !event.target.matches('.btn-comprar')) {
                 document.querySelectorAll('.dropdown-content').forEach(content => {
@@ -497,8 +501,8 @@
         }
 
         // Filtrar categorías
-        function filtrarCategoria(categoria) {
-            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.0 && btn.classList.remove('activo'));
+        function filtrarCategoria(categoria, event) {
+            document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
             event.target.classList.add('activo');
 
             let productos = document.querySelectorAll('.producto');
@@ -528,8 +532,9 @@
         }
 
         // Enviar pedido a WhatsApp
-        function enviarPedido(event, producto, precioUnitario, metodoPago, enlace) {
+        function enviarPedido(event, producto, precioUnitario, metodoPago) {
             event.preventDefault();
+            let enlace = event.target;
             let tarjeta = enlace.closest('.producto');
             let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
             let total = precioUnitario * cantidad;
