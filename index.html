@@ -129,6 +129,21 @@
             overflow: hidden;
         }
 
+        /* Etiqueta especial para Combos */
+        .badge-combo {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #ff3333;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            z-index: 10;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
+        }
+
         /* Carrusel */
         .carrusel-container {
             position: relative;
@@ -198,7 +213,7 @@
             margin-bottom: 8px;
         }
 
-        /* Controles */
+        /* Controles (Tallas y Colores) */
         .opciones-grid {
             display: flex;
             gap: 5px;
@@ -218,7 +233,7 @@
             width: 100%;
             padding: 8px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
             text-align: center;
@@ -243,10 +258,10 @@
 
         .dropdown-content a {
             color: white;
-            padding: 10px;
+            padding: 9px;
             text-decoration: none;
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             text-align: left;
             border-bottom: 1px solid #282828;
         }
@@ -295,7 +310,7 @@
 
         .btn-agregar-carrito:hover { background-color: #cc0000; transform: scale(0.98); }
 
-        /* ANIMACIÓN DE PRODUCTO VOLANDO AL CARRITO */
+        /* ANIMACIÓN DE VUELO AL CARRITO */
         .flying-item {
             position: fixed;
             z-index: 9999;
@@ -348,7 +363,7 @@
 
         .btn-ver-carrito:hover { background: #cc0000; transform: scale(1.05); }
 
-        /* VENTANA MODAL (FACTURA HERMOSA) */
+        /* MODAL DE FACTURA */
         .modal-carrito {
             display: none;
             position: fixed;
@@ -463,14 +478,14 @@
         /* Footer */
         footer {
             margin-top: 30px;
-            padding: 15px 10px;
+            padding: 20px 10px;
             border-top: 1px solid #1a1a1a;
         }
 
         footer p {
             font-size: 12px;
             color: #777;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .redes-sociales {
@@ -483,7 +498,7 @@
         .redes-sociales a {
             background: #161616;
             color: #ccc;
-            padding: 6px 12px;
+            padding: 7px 14px;
             border-radius: 6px;
             text-decoration: none;
             font-size: 11px;
@@ -501,25 +516,76 @@
 <body>
 
     <h1>Yakuza Fade Co.</h1>
-    <div class="subtitulo">Barbería & Ropa Oficial. ¡Arma tu carrito!</div>
+    <div class="subtitulo">Barbería, Ropa Oficial & Combos. ¡Arma tu carrito!</div>
 
     <!-- BARRA DE BÚSQUEDA -->
     <div class="buscador-container">
-        <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos..." onkeyup="filtrarProductos()">
+        <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos o combos..." onkeyup="filtrarProductos()">
     </div>
 
     <!-- FILTROS -->
     <div class="filtros-container">
         <button class="btn-filtro activo" onclick="filtrarCategoria('todos', event)">Todos</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('combos', event)">🔥 Combos</button>
         <button class="btn-filtro" onclick="filtrarCategoria('ropa', event)">Ropa</button>
+        <button class="btn-filtro" onclick="filtrarCategoria('medias', event)">🧦 Medias</button>
         <button class="btn-filtro" onclick="filtrarCategoria('barberia', event)">Barbería</button>
-        <button class="btn-filtro" onclick="filtrarCategoria('zapatos', event)">Zapatos</button>
-        <button class="btn-filtro" onclick="filtrarCategoria('accesorios', event)">Accesorios</button>
     </div>
 
     <div class="contenedor-tienda" id="listaProductos">
 
-        <!-- PRODUCTO 1 -->
+        <!-- COMBO 1 (Ejemplo de Combo Especial) -->
+        <div class="producto" data-categoria="combos" data-nombre="combo yakuza total camisa medias">
+            <div class="badge-combo">¡AHORRA 20%!</div>
+            <div class="carrusel-container">
+                <div class="carrusel-slides" id="slides-combo1">
+                    <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400" alt="Combo">
+                    <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400" alt="Combo 2">
+                </div>
+                <button class="carrusel-btn prev" onclick="moverCarrusel('slides-combo1', -1)">❮</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel('slides-combo1', 1)">❯</button>
+            </div>
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-combo1')">
+            
+            <h3>🔥 Combo Yakuza Total (Camisa + Medias)</h3>
+            <p>Incluye 1 Camisa oficial + 1 Par de Medias de diseño.</p>
+            <div class="precio">$20.00</div>
+            
+            <div class="opciones-grid">
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla Camisa: <span class="talla-elegida">M</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'S')">S</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'M')">M</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'L')">L</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'XL')">XL</a>
+                    </div>
+                </div>
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Color: <span class="color-elegido">Negro</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Negro')">Negro</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Rojo')">Rojo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cantidad-container">
+                <span>Cant:</span>
+                <div>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
+                    <span class="contador-val">1</span>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Combo Yakuza Total', 20, true)">🛒 Añadir al Carrito</button>
+        </div>
+
+        <!-- PRODUCTO 2 (Camisa con color y talla) -->
         <div class="producto" data-categoria="ropa" data-nombre="camisa yakuza fade">
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-1">
@@ -532,17 +598,27 @@
             <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-1')">
             
             <h3>Camisa Yakuza Fade</h3>
-            <p>Camisa oficial de alta calidad.</p>
+            <p>Camisa oficial de alta calidad con dragón.</p>
             <div class="precio">$15.00</div>
             
             <div class="opciones-grid">
                 <div class="dropdown-contenedor">
                     <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla: <span class="talla-elegida">M</span> ▾</button>
                     <div class="dropdown-content">
-                        <a href="#" onclick="seleccionarTalla(event, 'S')">Talla S</a>
-                        <a href="#" onclick="seleccionarTalla(event, 'M')">Talla M</a>
-                        <a href="#" onclick="seleccionarTalla(event, 'L')">Talla L</a>
-                        <a href="#" onclick="seleccionarTalla(event, 'XL')">Talla XL</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'S')">Talla S</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'M')">Talla M</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'L')">Talla L</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'XL')">Talla XL</a>
+                    </div>
+                </div>
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Color: <span class="color-elegido">Negro</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Negro')">Negro</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Rojo')">Rojo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
                     </div>
                 </div>
             </div>
@@ -559,7 +635,56 @@
             <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Camisa Yakuza Fade', 15, true)">🛒 Añadir al Carrito</button>
         </div>
 
-        <!-- PRODUCTO 2 -->
+        <!-- PRODUCTO 3 (Medias / Calcetines) -->
+        <div class="producto" data-categoria="medias" data-nombre="medias yakuza urbanas">
+            <div class="badge-combo">¡NUEVO!</div>
+            <div class="carrusel-container">
+                <div class="carrusel-slides" id="slides-medias">
+                    <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400" alt="Medias">
+                    <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400" alt="Medias 2">
+                </div>
+                <button class="carrusel-btn prev" onclick="moverCarrusel('slides-medias', -1)">❮</button>
+                <button class="carrusel-btn next" onclick="moverCarrusel('slides-medias', 1)">❯</button>
+            </div>
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-medias')">
+            
+            <h3>Medias Urbanas Yakuza</h3>
+            <p>Medias cómodas y deportivas con estilo streetwear.</p>
+            <div class="precio">$5.00</div>
+            
+            <div class="opciones-grid">
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla: <span class="talla-elegida">Única</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, '35-38')">35 - 38</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, '39-42')">39 - 42</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Única')">Única (Estándar)</a>
+                    </div>
+                </div>
+                <div class="dropdown-contenedor">
+                    <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Color: <span class="color-elegido">Negro/Rojo</span> ▾</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Negro/Rojo')">Negro/Rojo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
+                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cantidad-container">
+                <span>Cant:</span>
+                <div>
+                    <button type="button" onclick="cambiarCantidad(this, -1)">-</button>
+                    <span class="contador-val">1</span>
+                    <button type="button" onclick="cambiarCantidad(this, 1)">+</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Medias Urbanas Yakuza', 5, true)">🛒 Añadir al Carrito</button>
+        </div>
+
+        <!-- PRODUCTO 4 (Barbería) -->
         <div class="producto" data-categoria="barberia" data-nombre="aceite para barba yakuza">
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-2">
@@ -617,13 +742,14 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER CON TODAS LAS REDES -->
     <footer>
         <p>Yakuza Fade Co. Todos los derechos reservados.</p>
         <div class="redes-sociales">
             <a href="https://wa.me/584123167126?text=Hola,%20vengo%20de%20la%20web" target="_blank">💬 WhatsApp</a>
             <a href="https://instagram.com" target="_blank">📸 Instagram</a>
             <a href="https://facebook.com" target="_blank">📘 Facebook</a>
+            <a href="https://youtube.com" target="_blank">▶️ YouTube</a>
         </div>
     </footer>
 
@@ -657,10 +783,13 @@
             }
         }
 
-        function seleccionarTalla(event, talla) {
+        function seleccionarOpcion(event, elementoLink, valor) {
             event.preventDefault();
-            let dropdown = event.target.closest('.dropdown-contenedor');
-            dropdown.querySelector('.talla-elegida').textContent = talla;
+            let dropdown = elementoLink.closest('.dropdown-contenedor');
+            let spanDestino = dropdown.querySelector('.talla-elegida') || dropdown.querySelector('.color-elegido');
+            if(spanDestino) {
+                spanDestino.textContent = valor;
+            }
             dropdown.querySelector('.dropdown-content').classList.remove('show');
         }
 
@@ -719,10 +848,20 @@
         }
 
         // --- ANIMACIÓN DE VUELO AL CARRITO Y LÓGICA ---
-        function agregarAlCarrito(event, btn, nombreProducto, precioUnitario, tieneTalla) {
+        function agregarAlCarrito(event, btn, nombreProducto, precioUnitario, tieneOpciones) {
             let tarjeta = btn.closest('.producto');
             let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
-            let talla = tieneTalla ? tarjeta.querySelector('.talla-elegida').textContent : 'Única';
+            
+            let talla = 'Única';
+            let color = 'Estándar';
+
+            let spanTalla = tarjeta.querySelector('.talla-elegida');
+            let spanColor = tarjeta.querySelector('.color-elegido');
+
+            if (spanTalla) talla = spanTalla.textContent;
+            if (spanColor) color = spanColor.textContent;
+
+            let detalleVariacion = `Talla: ${talla} | Color: ${color}`;
 
             // Efecto de imagen voladora
             let imgElement = tarjeta.querySelector('.carrusel-slides img');
@@ -749,7 +888,7 @@
             }, 850);
 
             // Agregar al arreglo del carrito
-            let itemExistente = carrito.find(item => item.nombre === nombreProducto && item.talla === talla);
+            let itemExistente = carrito.find(item => item.nombre === nombreProducto && item.variacion === detalleVariacion);
             if (itemExistente) {
                 itemExistente.cantidad += cantidad;
             } else {
@@ -757,7 +896,7 @@
                     nombre: nombreProducto,
                     precio: precioUnitario,
                     cantidad: cantidad,
-                    talla: talla
+                    variacion: detalleVariacion
                 });
             }
 
@@ -801,12 +940,13 @@
                 contenedorModal.innerHTML = '<p style="text-align:center; color:#888;">Tu carrito está vacío.</p>';
             } else {
                 carrito.forEach((item, index) => {
+                    let subtotal = item.precio * item.cantidad;
                     contenedorModal.innerHTML += `
                         <div class="item-carrito">
                             <div>
                                 <strong style="color:white; font-size:13px;">${item.nombre}</strong><br>
-                                <small style="color:#aaa;">Talla: ${item.talla} | Cant: ${item.cantidad}</small><br>
-                                <span style="color: #4cd137; font-weight:bold;">$${item.precio * item.cantidad}.00</span>
+                                <small style="color:#aaa;">${item.variacion} | Cant: ${item.cantidad}</small><br>
+                                <span style="color: #4cd137; font-weight:bold;">$${subtotal}</span>
                             </div>
                             <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})">✕</button>
                         </div>
@@ -837,10 +977,10 @@
             carrito.forEach(item => {
                 let subtotal = item.precio * item.cantidad;
                 montoTotal += subtotal;
-                mensaje += `▪️ *${item.nombre}*\n   Talla: ${item.talla} | Cant: ${item.cantidad} x $${item.precio} = $${subtotal}\n\n`;
+                mensaje += `▪️ *${item.nombre}*\n   ${item.variacion} | Cant: ${item.cantidad} x $${item.precio} = $${subtotal}\n\n`;
             });
 
-            mensaje += `💵 *TOTAL A PAGAR: $${montoTotal}.00*\n💳 *Método de pago:* ${metodoPago}`;
+            mensaje += `💵 *TOTAL A PAGAR: $${montoTotal}*\n💳 *Método de pago:* ${metodoPago}`;
 
             let urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWhatsApp, '_blank');
