@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yakuza Fade Co. - Tienda Online</title>
     
-    <!-- Enlace para instalar como App en el teléfono -->
+    <!-- Enlace para PWA (App instalable) -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff3333">
 
@@ -17,6 +17,7 @@
             margin: 0;
             padding: 15px;
             text-align: center;
+            padding-bottom: 80px; /* Espacio para la barra flotante del carrito */
         }
 
         @keyframes fadeInDown {
@@ -118,7 +119,7 @@
             animation: fadeInUp 1s ease-in-out;
         }
 
-        /* Estilos del Carrusel de Imágenes */
+        /* Carrusel de Imágenes */
         .carrusel-container {
             position: relative;
             width: 100%;
@@ -199,7 +200,7 @@
             width: 100%;
         }
 
-        .btn-desplegable, .btn-comprar {
+        .btn-desplegable {
             background-color: #222;
             color: white;
             border: 1px solid #333;
@@ -212,19 +213,12 @@
             text-align: center;
         }
 
-        .btn-comprar {
-            background-color: #ff3333;
-            border: none;
-        }
-
         .btn-desplegable:hover { background-color: #333; }
-        .btn-comprar:hover { background-color: #cc0000; }
 
-        /* Menú desplegable corregido */
         .dropdown-content {
             display: none;
             position: absolute;
-            bottom: 100%; /* Se despliega hacia arriba para que no lo tape la tarjeta */
+            bottom: 100%;
             left: 0;
             background-color: #1a1a1a;
             width: 100%;
@@ -273,6 +267,150 @@
 
         .cantidad-container button:hover { background: #ff3333; }
 
+        .btn-agregar-carrito {
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 9px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .btn-agregar-carrito:hover { background-color: #cc0000; }
+
+        /* BARRA FLOTANTE DEL CARRITO (Abajo) */
+        .carrito-flotante {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #141414;
+            border-top: 2px solid #ff3333;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px -5px 20px rgba(0,0,0,0.9);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .carrito-info {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-ver-carrito {
+            background: #ff3333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-ver-carrito:hover { background: #cc0000; }
+
+        /* VENTANA MODAL DEL CARRITO */
+        .modal-carrito {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-contenido {
+            background: #181818;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #333;
+            text-align: left;
+        }
+
+        .modal-contenido h2 {
+            color: #ff3333;
+            margin-top: 0;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .item-carrito {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #282828;
+            font-size: 12px;
+        }
+
+        .btn-eliminar {
+            background: #333;
+            color: #ff3333;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-eliminar:hover { background: #ff3333; color: white; }
+
+        .total-modal {
+            font-size: 15px;
+            font-weight: bold;
+            text-align: right;
+            margin: 15px 0;
+            color: #4cd137;
+        }
+
+        /* Botón de pago en el modal */
+        .opciones-pago-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-enviar-pedido {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .btn-enviar-pedido:hover { background: #1ebe5d; }
+
+        .btn-cerrar-modal {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
         /* Pie de página */
         footer {
             margin-top: 30px;
@@ -313,7 +451,7 @@
 <body>
 
     <h1>Yakuza Fade Co.</h1>
-    <div class="subtitulo">Barbería & Ropa Oficial. Selecciona lo que deseas llevar:</div>
+    <div class="subtitulo">Barbería & Ropa Oficial. ¡Arma tu carrito!</div>
 
     <!-- BARRA DE BÚSQUEDA -->
     <div class="buscador-container">
@@ -331,10 +469,8 @@
 
     <div class="contenedor-tienda" id="listaProductos">
 
-        <!-- PRODUCTO 1 (Ropa con Carrusel y Tallas) -->
+        <!-- PRODUCTO 1 (Ropa) -->
         <div class="producto" data-categoria="ropa" data-nombre="camisa yakuza fade">
-            
-            <!-- Carrusel de fotos -->
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-1">
                     <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400" alt="Foto 1">
@@ -350,7 +486,6 @@
             <div class="precio">$15.00</div>
             
             <div class="opciones-grid">
-                <!-- Talla -->
                 <div class="dropdown-contenedor">
                     <button type="button" onclick="toggleDropdown(event, this)" class="btn-desplegable">Talla: <span class="talla-elegida">M</span> ▾</button>
                     <div class="dropdown-content">
@@ -371,20 +506,11 @@
                 </div>
             </div>
 
-            <!-- Menú de Pago -->
-            <div class="dropdown-contenedor">
-                <button type="button" onclick="toggleDropdown(event, this)" class="btn-comprar">Comprar ▾</button>
-                <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Pago Móvil')">📱 Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Transferencia')">🏦 Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Camisa Yakuza Fade', 15, 'Binance')">🪙 Binance</a>
-                </div>
-            </div>
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(this, 'Camisa Yakuza Fade', 15, true)">🛒 Añadir al Carrito</button>
         </div>
 
-        <!-- PRODUCTO 2 (Barbería con Carrusel) -->
+        <!-- PRODUCTO 2 (Barbería sin talla) -->
         <div class="producto" data-categoria="barberia" data-nombre="aceite para barba yakuza">
-            
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-2">
                     <img src="https://images.unsplash.com/photo-1621607512214-68297480165e?w=400" alt="Foto 1">
@@ -408,16 +534,39 @@
                 </div>
             </div>
 
-            <div class="dropdown-contenedor" style="margin-top: 8px;">
-                <button type="button" onclick="toggleDropdown(event, this)" class="btn-comprar">Comprar ▾</button>
-                <div class="dropdown-content">
-                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Pago Móvil')">📱 Pago Móvil</a>
-                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Transferencia')">🏦 Transferencia</a>
-                    <a href="#" onclick="enviarPedido(event, 'Aceite para Barba', 10, 'Binance')">🪙 Binance</a>
-                </div>
-            </div>
+            <button type="button" class="btn-agregar-carrito" style="margin-top: 8px;" onclick="agregarAlCarrito(this, 'Aceite para Barba', 10, false)">🛒 Añadir al Carrito</button>
         </div>
 
+    </div>
+
+    <!-- BARRA FLOTANTE DEL CARRITO -->
+    <div class="carrito-flotante" id="barraCarrito" style="display: none;">
+        <div class="carrito-info">
+            🛒 Carrito: <span id="contadorCarritoTotal">0</span> productos | Total: $<span id="montoTotalCarrito">0</span>
+        </div>
+        <button class="btn-ver-carrito" onclick="abrirModalCarrito()">Ver Carrito</button>
+    </div>
+
+    <!-- VENTANA MODAL DEL CARRITO -->
+    <div class="modal-carrito" id="modalCarrito">
+        <div class="modal-contenido">
+            <h2>Tu Carrito Yakuza Fade</h2>
+            <div id="listaItemsModal">
+                <!-- Aquí se cargan dinámicamente los productos -->
+            </div>
+            <div class="total-modal">
+                Total a Pagar: $<span id="modalMontoTotal">0</span>
+            </div>
+            
+            <div style="font-size: 12px; margin-bottom: 8px; color: #aaa;">Elige método de pago para enviar tu pedido:</div>
+            <div class="opciones-pago-modal">
+                <button class="btn-enviar-pedido" onclick="enviarPedidoWhatsApp('Pago Móvil')">📱 Pagar con Pago Móvil</button>
+                <button class="btn-enviar-pedido" onclick="enviarPedidoWhatsApp('Transferencia')">🏦 Pagar con Transferencia</button>
+                <button class="btn-enviar-pedido" onclick="enviarPedidoWhatsApp('Binance')">🪙 Pagar con Binance</button>
+            </div>
+
+            <button class="btn-cerrar-modal" onclick="cerrarModalCarrito()">Seguir Viendo Productos</button>
+        </div>
     </div>
 
     <!-- REDES SOCIALES -->
@@ -432,6 +581,9 @@
     </footer>
 
     <script>
+        // Array global del Carrito
+        let carrito = [];
+
         // Carrusel de imágenes
         const indicesCarrusel = {};
         function moverCarrusel(idCarrusel, direccion) {
@@ -447,7 +599,6 @@
             contenedorSlides.style.transform = `translateX(${desplazamiento}%)`;
         }
 
-        // Cargar imagen local de prueba en el carrusel
         function cargarImagenLocal(event, idCarrusel) {
             let archivo = event.target.files[0];
             if (archivo) {
@@ -461,7 +612,6 @@
             }
         }
 
-        // Seleccionar talla
         function seleccionarTalla(event, talla) {
             event.preventDefault();
             let dropdown = event.target.closest('.dropdown-contenedor');
@@ -469,7 +619,6 @@
             dropdown.querySelector('.dropdown-content').classList.remove('show');
         }
 
-        // Cambiar cantidad
         function cambiarCantidad(btn, cambio) {
             let tarjeta = btn.closest('.producto');
             let spanVal = tarjeta.querySelector('.contador-val');
@@ -478,20 +627,15 @@
             spanVal.textContent = cantidad;
         }
 
-        // Menús desplegables inteligentes (abre y cierra sin cerrarse al instante)
         function toggleDropdown(event, btn) {
             event.stopPropagation();
             let menuActual = btn.nextElementSibling;
-            
-            // Cierra los demás abiertos
             document.querySelectorAll('.dropdown-content').forEach(content => {
                 if (content !== menuActual) content.classList.remove('show');
             });
-            
             menuActual.classList.toggle('show');
         }
 
-        // Cerrar menú al hacer clic fuera
         window.onclick = function(event) {
             if (!event.target.matches('.btn-desplegable') && !event.target.matches('.btn-comprar')) {
                 document.querySelectorAll('.dropdown-content').forEach(content => {
@@ -500,7 +644,6 @@
             }
         }
 
-        // Filtrar categorías
         function filtrarCategoria(categoria, event) {
             document.querySelectorAll('.btn-filtro').forEach(btn => btn.classList.remove('activo'));
             event.target.classList.add('activo');
@@ -515,7 +658,6 @@
             });
         }
 
-        // Buscador
         function filtrarProductos() {
             let texto = document.getElementById('inputBuscador').value.toLowerCase();
             let productos = document.querySelectorAll('.producto');
@@ -531,20 +673,106 @@
             });
         }
 
-        // Enviar pedido a WhatsApp
-        function enviarPedido(event, producto, precioUnitario, metodoPago) {
-            event.preventDefault();
-            let enlace = event.target;
-            let tarjeta = enlace.closest('.producto');
+        // --- FUNCIONES DEL CARRITO ---
+        function agregarAlCarrito(btn, nombreProducto, precioUnitario, tieneTalla) {
+            let tarjeta = btn.closest('.producto');
             let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
-            let total = precioUnitario * cantidad;
+            let talla = tieneTalla ? tarjeta.querySelector('.talla-elegida').textContent : 'Única';
+
+            // Revisa si ya existe el mismo producto con la misma talla en el carrito
+            let itemExistente = carrito.find(item => item.nombre === nombreProducto && item.talla === talla);
+            if (itemExistente) {
+                itemExistente.cantidad += cantidad;
+            } else {
+                carrito.push({
+                    nombre: nombreProducto,
+                    precio: precioUnitario,
+                    cantidad: cantidad,
+                    talla: talla
+                });
+            }
+
+            actualizarBarraCarrito();
             
-            let tallaSpan = tarjeta.querySelector('.talla-elegida');
-            let tallaTexto = tallaSpan ? `\n👕 Talla: ${tallaSpan.textContent}` : '';
-            
+            // Animación visual rápida de éxito
+            btn.textContent = "¡Agregado! ✓";
+            btn.style.background = "#4cd137";
+            setTimeout(() => {
+                btn.textContent = "🛒 Añadir al Carrito";
+                btn.style.background = "#ff3333";
+            }, 1000);
+        }
+
+        function actualizarBarraCarrito() {
+            let totalItems = 0;
+            let montoTotal = 0;
+
+            carrito.forEach(item => {
+                totalItems += item.cantidad;
+                montoTotal += (item.precio * item.cantidad);
+            });
+
+            document.getElementById('contadorCarritoTotal').textContent = totalItems;
+            document.getElementById('montoTotalCarrito').textContent = montoTotal;
+            document.getElementById('modalMontoTotal').textContent = montoTotal;
+
+            let barra = document.getElementById('barraCarrito');
+            if (totalItems > 0) {
+                barra.style.display = 'flex';
+            } else {
+                barra.style.display = 'none';
+            }
+        }
+
+        function abrirModalCarrito() {
+            let contenedorModal = document.getElementById('listaItemsModal');
+            contenedorModal.innerHTML = '';
+
+            if (carrito.length === 0) {
+                contenedorModal.innerHTML = '<p style="text-align:center; color:#888;">Tu carrito está vacío.</p>';
+            } else {
+                carrito.forEach((item, index) => {
+                    contenedorModal.innerHTML += `
+                        <div class="item-carrito">
+                            <div>
+                                <strong>${item.nombre}</strong><br>
+                                <small>Talla: ${item.talla} | Cant: ${item.cantidad}</small><br>
+                                <span style="color: #4cd137;">$${item.precio * item.cantidad}.00</span>
+                            </div>
+                            <button class="btn-eliminar" onclick="eliminarDelCarrito(${index})">X</button>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('modalCarrito').style.display = 'flex';
+        }
+
+        function cerrarModalCarrito() {
+            document.getElementById('modalCarrito').style.display = 'none';
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarBarraCarrito();
+            abrirModalCarrito(); // Recarga la vista del modal
+        }
+
+        function enviarPedidoWhatsApp(metodoPago) {
+            if (carrito.length === 0) return;
+
             let telefono = "584123167126";
-            let mensaje = `Hola, Yakuza Fade Co. Quiero comprar:\n\n📦 *${producto}*${tallaTexto}\n🔢 Cantidad: ${cantidad}\n💵 Total: $${total}.00\n💳 Método de pago: ${metodoPago}`;
-            
+            let mensaje = "Hola, Yakuza Fade Co. Quiero realizar el siguiente pedido:\n\n";
+            let montoTotal = 0;
+
+            carrito.forEach(item => {
+                let subtotal = item.precio * item.cantidad;
+                montoTotal += subtotal;
+                mensaje += `▪️ *${item.nombre}* (Talla: ${item.talla})\n   Cant: ${item.cantidad} x $${item.precio} = $${subtotal}\n\n`;
+            });
+
+            mensaje += `💵 *TOTAL A PAGAR: $${montoTotal}.00*\n💳 *Método de pago:* ${metodoPago}`;
+
             let urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
             window.open(urlWhatsApp, '_blank');
         }
