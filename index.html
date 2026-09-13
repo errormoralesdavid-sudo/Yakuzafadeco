@@ -129,7 +129,7 @@
             overflow: hidden;
         }
 
-        /* Etiqueta especial para Combos */
+        /* Etiqueta especial para Combos / Avisos */
         .badge-combo {
             position: absolute;
             top: 15px;
@@ -142,6 +142,17 @@
             border-radius: 4px;
             z-index: 10;
             box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Stock indicador */
+        .stock-indicator {
+            font-size: 11px;
+            color: #4cd137;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .stock-indicator.agotado {
+            color: #ff3333;
         }
 
         /* Carrusel */
@@ -309,6 +320,7 @@
         }
 
         .btn-agregar-carrito:hover { background-color: #cc0000; transform: scale(0.98); }
+        .btn-agregar-carrito:disabled { background-color: #444; color: #888; cursor: not-allowed; transform: none; }
 
         /* ANIMACIÓN DE VUELO AL CARRITO */
         .flying-item {
@@ -534,19 +546,26 @@
 
     <div class="contenedor-tienda" id="listaProductos">
 
-        <!-- COMBO 1 -->
-        <div class="producto" data-categoria="combos" data-nombre="combo yakuza total camisa medias">
+        <!-- ========================================== -->
+        <!-- PRODUCTO 1: COMBO YAKUZA TOTAL               -->
+        <!-- ========================================== -->
+        <div class="producto" data-categoria="combos" data-nombre="combo yakuza total camisa medias" data-stock="5">
             <div class="badge-combo">¡AHORRA 20%!</div>
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-combo1">
+                    <!-- CAMBIAR IMAGEN AQUÍ (puedes poner URL web o subir local con el botón de abajo) -->
                     <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400" alt="Combo">
                     <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400" alt="Combo 2">
                 </div>
                 <button class="carrusel-btn prev" onclick="moverCarrusel('slides-combo1', -1)">❮</button>
                 <button class="carrusel-btn next" onclick="moverCarrusel('slides-combo1', 1)">❯</button>
             </div>
-            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-combo1')">
+            <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-combo1')" title="Subir foto desde tu dispositivo">
             
+            <!-- STOCK DISPONIBLE -->
+            <div class="stock-indicator">📦 Stock disponible: <span>5</span> unids.</div>
+
+            <!-- CAMBIAR TÍTULO, DESCRIPCIÓN Y PRECIO -->
             <h3>🔥 Combo Yakuza Total (Camisa + Medias)</h3>
             <p>Incluye 1 Camisa oficial + 1 Par de Medias de diseño.</p>
             <div class="precio">$20.00</div>
@@ -567,8 +586,6 @@
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Negro')">Negro</a>
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Rojo')">Rojo</a>
-                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
-                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
                     </div>
                 </div>
             </div>
@@ -582,13 +599,17 @@
                 </div>
             </div>
 
-            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Combo Yakuza Total', 20, true)">🛒 Añadir al Carrito</button>
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Combo Yakuza Total', 20)">🛒 Añadir al Carrito</button>
         </div>
 
-        <!-- PRODUCTO 2 (Camisa) -->
-        <div class="producto" data-categoria="ropa" data-nombre="camisa yakuza fade">
+
+        <!-- ========================================== -->
+        <!-- PRODUCTO 2: CAMISA YAKUZA FADE             -->
+        <!-- ========================================== -->
+        <div class="producto" data-categoria="ropa" data-nombre="camisa yakuza fade" data-stock="8">
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-1">
+                    <!-- CAMBIAR IMAGEN AQUÍ -->
                     <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400" alt="Camisa">
                     <img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400" alt="Camisa 2">
                 </div>
@@ -597,6 +618,10 @@
             </div>
             <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-1')">
             
+            <!-- STOCK DISPONIBLE -->
+            <div class="stock-indicator">📦 Stock disponible: <span>8</span> unids.</div>
+
+            <!-- CAMBIAR TÍTULO, DESCRIPCIÓN Y PRECIO -->
             <h3>Camisa Yakuza Fade</h3>
             <p>Camisa oficial de alta calidad con dragón.</p>
             <div class="precio">$15.00</div>
@@ -617,8 +642,6 @@
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Negro')">Negro</a>
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Rojo')">Rojo</a>
-                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
-                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
                     </div>
                 </div>
             </div>
@@ -632,14 +655,18 @@
                 </div>
             </div>
 
-            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Camisa Yakuza Fade', 15, true)">🛒 Añadir al Carrito</button>
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Camisa Yakuza Fade', 15)">🛒 Añadir al Carrito</button>
         </div>
 
-        <!-- PRODUCTO 3 (Medias) -->
-        <div class="producto" data-categoria="medias" data-nombre="medias yakuza urbanas">
+
+        <!-- ========================================== -->
+        <!-- PRODUCTO 3: MEDIAS URBANAS YAKUZA          -->
+        <!-- ========================================== -->
+        <div class="producto" data-categoria="medias" data-nombre="medias yakuza urbanas" data-stock="12">
             <div class="badge-combo">¡NUEVO!</div>
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-medias">
+                    <!-- CAMBIAR IMAGEN AQUÍ -->
                     <img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=400" alt="Medias">
                     <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400" alt="Medias 2">
                 </div>
@@ -648,6 +675,10 @@
             </div>
             <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-medias')">
             
+            <!-- STOCK DISPONIBLE -->
+            <div class="stock-indicator">📦 Stock disponible: <span>12</span> unids.</div>
+
+            <!-- CAMBIAR TÍTULO, DESCRIPCIÓN Y PRECIO -->
             <h3>Medias Urbanas Yakuza</h3>
             <p>Medias cómodas y deportivas con estilo streetwear.</p>
             <div class="precio">$5.00</div>
@@ -666,8 +697,6 @@
                     <div class="dropdown-content">
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Negro/Rojo')">Negro/Rojo</a>
                         <a href="#" onclick="seleccionarOpcion(event, this, 'Blanco')">Blanco</a>
-                        <a href="#" onclick="seleccionarOpcion(event, this, 'Amarillo')">Amarillo</a>
-                        <a href="#" onclick="seleccionarOpcion(event, this, 'Azul')">Azul</a>
                     </div>
                 </div>
             </div>
@@ -681,13 +710,17 @@
                 </div>
             </div>
 
-            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Medias Urbanas Yakuza', 5, true)">🛒 Añadir al Carrito</button>
+            <button type="button" class="btn-agregar-carrito" onclick="agregarAlCarrito(event, this, 'Medias Urbanas Yakuza', 5)">🛒 Añadir al Carrito</button>
         </div>
 
-        <!-- PRODUCTO 4 (Barbería) -->
-        <div class="producto" data-categoria="barberia" data-nombre="aceite para barba yakuza">
+
+        <!-- ========================================== -->
+        <!-- PRODUCTO 4: ACEITE PARA BARBA              -->
+        <!-- ========================================== -->
+        <div class="producto" data-categoria="barberia" data-nombre="aceite para barba yakuza" data-stock="3">
             <div class="carrusel-container">
                 <div class="carrusel-slides" id="slides-2">
+                    <!-- CAMBIAR IMAGEN AQUÍ -->
                     <img src="https://images.unsplash.com/photo-1621607512214-68297480165e?w=400" alt="Aceite">
                     <img src="https://images.unsplash.com/photo-1517832606293-7ae2a73c912f?w=400" alt="Aceite 2">
                 </div>
@@ -696,6 +729,10 @@
             </div>
             <input type="file" class="input-file-local" accept="image/*" onchange="cargarImagenLocal(event, 'slides-2')">
 
+            <!-- STOCK DISPONIBLE -->
+            <div class="stock-indicator">📦 Stock disponible: <span>3</span> unids.</div>
+
+            <!-- CAMBIAR TÍTULO, DESCRIPCIÓN Y PRECIO -->
             <h3>Aceite para Barba</h3>
             <p>Cuidado profesional para caballeros.</p>
             <div class="precio">$10.00</div>
@@ -709,7 +746,7 @@
                 </div>
             </div>
 
-            <button type="button" class="btn-agregar-carrito" style="margin-top: 8px;" onclick="agregarAlCarrito(event, this, 'Aceite para Barba', 10, false)">🛒 Añadir al Carrito</button>
+            <button type="button" class="btn-agregar-carrito" style="margin-top: 8px;" onclick="agregarAlCarrito(event, this, 'Aceite para Barba', 10)">🛒 Añadir al Carrito</button>
         </div>
 
     </div>
@@ -742,7 +779,7 @@
         </div>
     </div>
 
-    <!-- FOOTER CON TODAS LAS REDES (INCLUYENDO TIKTOK) -->
+    <!-- FOOTER CON TODAS LAS REDES -->
     <footer>
         <p>Yakuza Fade Co. Todos los derechos reservados.</p>
         <div class="redes-sociales">
@@ -797,8 +834,14 @@
         function cambiarCantidad(btn, cambio) {
             let tarjeta = btn.closest('.producto');
             let spanVal = tarjeta.querySelector('.contador-val');
+            let stockDisponble = parseInt(tarjeta.dataset.stock);
             let cantidad = parseInt(spanVal.textContent) + cambio;
+            
             if (cantidad < 1) cantidad = 1;
+            if (cantidad > stockDisponble) {
+                cantidad = stockDisponble;
+                alert("⚠️ Has alcanzado el límite de stock disponible para este producto.");
+            }
             spanVal.textContent = cantidad;
         }
 
@@ -848,10 +891,11 @@
             });
         }
 
-        function agregarAlCarrito(event, btn, nombreProducto, precioUnitario, tieneOpciones) {
+        function agregarAlCarrito(event, btn, nombreProducto, precioUnitario) {
             let tarjeta = btn.closest('.producto');
             let cantidad = parseInt(tarjeta.querySelector('.contador-val').textContent);
-            
+            let stockDisponible = parseInt(tarjeta.dataset.stock);
+
             let talla = 'Única';
             let color = 'Estándar';
 
@@ -863,6 +907,7 @@
 
             let detalleVariacion = `Talla: ${talla} | Color: ${color}`;
 
+            // Animación de vuelo
             let imgElement = tarjeta.querySelector('.carrusel-slides img');
             let rectImg = imgElement.getBoundingClientRect();
             let btnRect = document.getElementById('btnVerCarritoAnimado').getBoundingClientRect();
@@ -887,6 +932,13 @@
             }, 850);
 
             let itemExistente = carrito.find(item => item.nombre === nombreProducto && item.variacion === detalleVariacion);
+            let cantidadEnCarritoActual = itemExistente ? itemExistente.cantidad : 0;
+
+            if ((cantidadEnCarritoActual + cantidad) > stockDisponible) {
+                alert(`⚠️ No puedes agregar más. Estás superando el stock disponible (${stockDisponible} unids.).`);
+                return;
+            }
+
             if (itemExistente) {
                 itemExistente.cantidad += cantidad;
             } else {
