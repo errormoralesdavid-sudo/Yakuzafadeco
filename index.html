@@ -210,7 +210,7 @@
                 if (data.subtituloEmpresa) window.subtituloEmpresa = data.subtituloEmpresa;
                 if (data.colorAcento) window.colorAcento = data.colorAcento;
                 if (data.fondoUrl !== undefined) window.fondoUrl = data.fondoUrl;
-                if (data.tasaManualBs !== undefined) window.tasaManualBs = data.tasaManualBs;
+                if (data.tasaManualBs !== undefined) window.tasaManualBs = parseFloat(data.tasaManualBs) || 0;
                 if (data.categorias) window.categoriasTienda = data.categorias;
                 if (data.productos) window.listaProductosYakuza = data.productos;
                 if (data.redes) window.redesEmpresa = data.redes;
@@ -283,7 +283,7 @@
             <input type="text" id="admin-empresa-subtitulo" placeholder="Ej. Barbería, Ropa Oficial & Combos Urbanos">
 
             <label>💵 Tasa Dólar Manual (Opcional - Deja en 0 para Tasa BCV Automática):</label>
-            <input type="number" step="0.01" id="admin-tasa-manual" placeholder="Ej. 141.50 (0 = Automático BCV)">
+            <input type="number" step="0.01" id="admin-tasa-manual" placeholder="Ej. 36.50 (0 = Automático BCV)">
 
             <label>🎨 Color del Tema / Detalles de la Página:</label>
             <input type="color" id="admin-color-acento" value="#ff3333" style="height:40px; cursor:pointer;">
@@ -350,7 +350,7 @@
         var colorAcento = "#ff3333";
         var fondoUrl = "";
         var tasaManualBs = 0;
-        var tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 140.00;
+        var tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 36.50;
         var categoriasTienda = ["Combos", "Ropa", "Medias", "Barbería"];
         var redesEmpresa = { wsp: "584123167126", ig: "", tk: "", fb: "", yt: "" };
         var idProductoEdicion = null;
@@ -366,11 +366,13 @@
 
         window.formatearPrecioBS = function(montoUSD) {
             var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+            if(!tasa || isNaN(tasa) || tasa <= 0) tasa = 36.50;
+            
             var totalBs = (parseFloat(montoUSD) || 0) * tasa;
             return totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
         };
 
-        // INTEGRACIÓN A TU API PREFERIDA (rates.dolarvzla.com/bcv/current.json)
+        // INTEGRACIÓN DE TASA BCV ANTI-NaN CON TRIPLE RESPALDO Y CORS SAFE
         window.obtenerTasaBCV = async function() {
             if(tasaManualBs > 0) {
                 document.getElementById('tasaDisplayTag').innerText = `💵 Tasa Fija: ${tasaManualBs.toFixed(2)} Bs./$`;
@@ -378,29 +380,34 @@
                 return;
             }
 
+            var tasaObtenida = null;
+
             try {
-                let resp = await fetch('https://rates.dolarvzla.com/bcv/current.json');
+                // API 1: DolarAPI (Muy estable y compatible con GitHub Pages / HTTPS)
+                let resp = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
                 let data = await resp.json();
-                
-                // Extrae valor de la API (rate o similar)
-                let valTasa = data.rate || data.current || data.promedio || (data.bcv ? data.bcv.rate : null);
-                
-                if(valTasa) {
-                    tasaBCVActual = parseFloat(valTasa);
-                    localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
+                if(data && data.promedio) {
+                    tasaObtenida = parseFloat(data.promedio);
                 }
             } catch(e) {
                 try {
-                    // Respaldos por si hay problemas de red
-                    let resp2 = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+                    // API 2: PyDolarVenezuela / BCV
+                    let resp2 = await fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv');
                     let data2 = await resp2.json();
-                    if(data2 && data2.promedio) {
-                        tasaBCVActual = parseFloat(data2.promedio);
-                        localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
+                    if(data2 && data2.moneda && data2.moneda.price) {
+                        tasaObtenida = parseFloat(data2.moneda.price);
                     }
                 } catch(err) {
-                    console.warn("Usando tasa almacenada en caché offline.");
+                    console.warn("Falla en la consulta API.");
                 }
+            }
+
+            if(tasaObtenida && !isNaN(tasaObtenida) && tasaObtenida > 0) {
+                tasaBCVActual = tasaObtenida;
+                localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
+            } else {
+                // Tasa de seguridad guardada en caché si falla la red
+                tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 36.50;
             }
 
             document.getElementById('tasaDisplayTag').innerText = `💵 BCV Oficial: ${tasaBCVActual.toFixed(2)} Bs./$`;
@@ -803,6 +810,8 @@
             carrito.forEach(i => { totalItems += i.cantidad; totalMontoUSD += (i.precio * i.cantidad); });
             
             var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+            if(!tasa || isNaN(tasa) || tasa <= 0) tasa = 36.50;
+
             var totalMontoBS = totalMontoUSD * tasa;
 
             document.getElementById('contadorCarritoTotal').innerText = totalItems;
@@ -819,6 +828,7 @@
             var cont = document.getElementById('listaItemsModal');
             var html = "";
             var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+            if(!tasa || isNaN(tasa) || tasa <= 0) tasa = 36.50;
 
             carrito.forEach((i, idx) => {
                 var subUSD = i.precio * i.cantidad;
@@ -848,6 +858,8 @@
         window.enviarPedidoWhatsApp = function(metodo) {
             if(carrito.length === 0) return;
             var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+            if(!tasa || isNaN(tasa) || tasa <= 0) tasa = 36.50;
+
             var msj = "🔥 *" + nombreEmpresa.toUpperCase() + " - NUEVO PEDIDO* 🔥\n\n";
             var totalUSD = 0;
 
