@@ -69,8 +69,20 @@
         .subtitulo {
             animation: fadeInDown 1.2s ease-in-out;
             color: #cccccc;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-size: 13px;
+        }
+
+        .tasa-bcv-tag {
+            display: inline-block;
+            background: #181818;
+            border: 1px solid #333;
+            color: #4cd137;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
         }
 
         .buscador-container { margin-bottom: 15px; animation: fadeInDown 1.3s ease-in-out; }
@@ -100,8 +112,9 @@
             box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
         }
 
-        .stock-indicator { font-size: 11px; color: #4cd137; margin-bottom: 6px; font-weight: bold; }
-        .stock-indicator.agotado { color: var(--color-acento); }
+        .stock-indicator { font-size: 11px; color: #aaa; margin-bottom: 6px; font-weight: bold; }
+        .stock-indicator span { color: #4cd137; }
+        .stock-indicator.agotado span { color: var(--color-acento); }
 
         .carrusel-container { position: relative; width: 100%; height: 160px; overflow: hidden; border-radius: 8px; background: #222; touch-action: pan-y; }
         .carrusel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease-in-out; }
@@ -115,7 +128,9 @@
 
         .producto h3 { font-size: 15px; margin: 8px 0 4px 0; color: #fff; }
         .producto p { font-size: 12px; color: #aaa; margin: 0 0 8px 0; }
-        .precio { font-weight: bold; color: #4cd137; font-size: 15px; margin-bottom: 8px; }
+        .precio-box { margin-bottom: 8px; }
+        .precio-usd { font-weight: bold; color: #ffffff; font-size: 15px; }
+        .precio-bs { font-weight: bold; color: #4cd137; font-size: 13px; display: block; }
 
         .opciones-grid { display: flex; gap: 5px; margin-bottom: 8px; }
         .dropdown-contenedor { position: relative; flex: 1; width: 100%; }
@@ -146,9 +161,9 @@
         .modal-carrito { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
         .modal-contenido { background: #141414; padding: 22px; border-radius: 14px; width: 90%; max-width: 420px; max-height: 85vh; overflow-y: auto; border: 1px solid #333; text-align: left; }
 
-        /* MODAL ZOOM */
-        .modal-zoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; }
-        .modal-zoom img { max-width: 92%; max-height: 85vh; border-radius: 8px; border: 2px solid var(--color-acento); }
+        /* MODAL ZOOM CON DESLIZAMIENTO TÁCTIL */
+        .modal-zoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; touch-action: pan-y; }
+        .modal-zoom img { max-width: 92%; max-height: 85vh; border-radius: 8px; border: 2px solid var(--color-acento); user-select: none; }
 
         /* FOOTER */
         footer { margin-top: 30px; padding: 20px 10px; border-top: 1px solid #1a1a1a; position: relative; }
@@ -180,6 +195,7 @@
                     subtituloEmpresa: window.subtituloEmpresa || "Barbería, Ropa Oficial & Combos Urbanos",
                     colorAcento: window.colorAcento || "#ff3333",
                     fondoUrl: window.fondoUrl || "",
+                    tasaManualBs: window.tasaManualBs || 0,
                     categorias: window.categoriasTienda || ["Combos", "Ropa", "Medias", "Barbería"],
                     productos: window.listaProductosYakuza || [],
                     redes: window.redesEmpresa || {}
@@ -194,10 +210,11 @@
                 if (data.subtituloEmpresa) window.subtituloEmpresa = data.subtituloEmpresa;
                 if (data.colorAcento) window.colorAcento = data.colorAcento;
                 if (data.fondoUrl !== undefined) window.fondoUrl = data.fondoUrl;
+                if (data.tasaManualBs !== undefined) window.tasaManualBs = data.tasaManualBs;
                 if (data.categorias) window.categoriasTienda = data.categorias;
                 if (data.productos) window.listaProductosYakuza = data.productos;
                 if (data.redes) window.redesEmpresa = data.redes;
-                window.renderizarPaginaCompleta();
+                window.obtenerTasaBCV();
             }
         });
     </script>
@@ -210,6 +227,7 @@
 
     <h1 id="brandHeader">Yakuza Fade Co.</h1>
     <div class="subtitulo" id="brandSubHeader">Barbería, Ropa Oficial & Combos Urbanos</div>
+    <div class="tasa-bcv-tag" id="tasaDisplayTag">💵 Tasa BCV: Cargando...</div>
 
     <div class="buscador-container">
         <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos..." onkeyup="window.filtrarProductos()">
@@ -221,10 +239,12 @@
 
     <!-- BARRA FLOTANTE CARRITO -->
     <div class="carrito-flotante" id="barraCarrito" style="display: none;">
-        <div style="font-size:13px; font-weight:bold; color:#ddd;">
-            🛒 Carrito: <span id="contadorCarritoTotal">0</span> prod. | <span id="montoTotalCarrito" style="color: #4cd137; font-size:15px;">$0</span>
+        <div style="font-size:12px; font-weight:bold; color:#ddd; text-align:left;">
+            🛒 <span id="contadorCarritoTotal">0</span> prod.<br>
+            <span id="montoTotalCarritoUSD" style="color: #fff; font-size:14px;">$0</span> | 
+            <span id="montoTotalCarritoBS" style="color: #4cd137; font-size:13px;">0 Bs.</span>
         </div>
-        <button style="background:var(--color-acento); color:#fff; border:none; padding:8px 18px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="window.abrirModalCarrito()">Ver Pedido</button>
+        <button style="background:var(--color-acento); color:#fff; border:none; padding:8px 16px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="window.abrirModalCarrito()">Ver Pedido</button>
     </div>
 
     <!-- MODAL RESUMEN COMPRA -->
@@ -232,20 +252,22 @@
         <div class="modal-contenido">
             <h2 style="color:var(--color-acento); text-align:center;">🧾 Resumen de Pedido</h2>
             <div id="listaItemsModal"></div>
-            <div style="font-size: 16px; font-weight: bold; text-align: right; margin: 15px 0; color: #4cd137; background: #111; padding: 8px; border-radius: 6px;">
-                Total a Pagar: $<span id="modalMontoTotal">0</span>
+            
+            <div style="font-size: 14px; font-weight: bold; text-align: right; margin: 15px 0; background: #111; padding: 10px; border-radius: 6px; border: 1px solid #222;">
+                <div>Total ($): <span style="color:#fff;" id="modalMontoTotalUSD">$0</span></div>
+                <div style="color: #4cd137; margin-top:2px;">Total (Bs.): <span id="modalMontoTotalBS">0 Bs.</span></div>
             </div>
             
             <div style="font-size:11px; color:#aaa; margin-bottom:6px;">SELECCIONA MÉTODO DE PAGO:</div>
-            <button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Pago Móvil')">📱 Pagar con Pago Móvil</button>
-            <button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Binance P2P')">🪙 Pagar con Binance</button>
+            <button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Pago Móvil (Bolívares)')">📱 Pagar con Pago Móvil (Bs.)</button>
+            <button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Binance P2P / USDT')">🪙 Pagar con Binance / USDT</button>
 
             <button style="background:#222; color:#aaa; border:1px solid #444; padding:8px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;" onclick="document.getElementById('modalCarrito').style.display='none'">Seguir Comprando</button>
         </div>
     </div>
 
-    <!-- MODAL ZOOM IMAGEN -->
-    <div class="modal-zoom" id="modalZoom" onclick="this.style.display='none'">
+    <!-- MODAL ZOOM CON NAVEGACIÓN Y SWIPE -->
+    <div class="modal-zoom" id="modalZoom" onclick="window.cerrarZoomModal(event)">
         <img id="imgZoomTarget" src="" alt="Zoom Producto">
     </div>
 
@@ -259,6 +281,9 @@
 
             <label>📝 Subtítulo de la Página:</label>
             <input type="text" id="admin-empresa-subtitulo" placeholder="Ej. Barbería, Ropa Oficial & Combos Urbanos">
+
+            <label>💵 Tasa Dólar Manual (Opcional - Deja en 0 para Tasa BCV Automática):</label>
+            <input type="number" step="0.01" id="admin-tasa-manual" placeholder="Ej. 141.50 (0 = Automático BCV)">
 
             <label>🎨 Color del Tema / Detalles de la Página:</label>
             <input type="color" id="admin-color-acento" value="#ff3333" style="height:40px; cursor:pointer;">
@@ -290,12 +315,14 @@
 
             <input type="text" id="adm-p-badge" placeholder="Etiqueta Especial (Ej. ¡AHORRA 20%!)">
             <input type="text" id="adm-p-tallas" placeholder="Tallas separadas por coma (S, M, L)">
-            <input type="text" id="adm-p-colores" placeholder="Colores separados por coma (Negro, Blanco)">
+            <input type="text" id="adm-p-colores" placeholder="Colores/Materiales por coma (Oro, Plata / Negro, Azul)">
             
-            <label style="color:#aaa;">🖼️ URLs de Imágenes (Casillas individuales):</label>
-            <input type="text" id="adm-p-img1" placeholder="URL Imagen Principal (1)">
-            <input type="text" id="adm-p-img2" placeholder="URL Imagen Secundaria (2)">
+            <label style="color:#aaa;">🖼️ URLs de Imágenes (Hasta 5 casillas):</label>
+            <input type="text" id="adm-p-img1" placeholder="URL Imagen 1 (Corresponde a Color 1)">
+            <input type="text" id="adm-p-img2" placeholder="URL Imagen 2 (Corresponde a Color 2)">
             <input type="text" id="adm-p-img3" placeholder="URL Imagen 3">
+            <input type="text" id="adm-p-img4" placeholder="URL Imagen 4">
+            <input type="text" id="adm-p-img5" placeholder="URL Imagen 5">
 
             <button class="btn-admin-act" onclick="window.guardarProductoAdmin()">Guardar Cambios en Catálogo</button>
             <button class="btn-admin-act" style="background:#333; color:#aaa; margin-bottom:12px;" onclick="window.limpiarFormAdmin()">Limpiar Formulario</button>
@@ -322,10 +349,63 @@
         var subtituloEmpresa = "Barbería, Ropa Oficial & Combos Urbanos";
         var colorAcento = "#ff3333";
         var fondoUrl = "";
+        var tasaManualBs = 0;
+        var tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 140.00;
         var categoriasTienda = ["Combos", "Ropa", "Medias", "Barbería"];
         var redesEmpresa = { wsp: "584123167126", ig: "", tk: "", fb: "", yt: "" };
         var idProductoEdicion = null;
         var indicesCarrusel = {};
+
+        var zoomImgsActuales = [];
+        var zoomIdxActual = 0;
+
+        window.formatearPrecioUSD = function(monto) {
+            var val = parseFloat(monto) || 0;
+            return (val % 1 === 0) ? "$" + val.toFixed(0) : "$" + val.toFixed(2);
+        };
+
+        window.formatearPrecioBS = function(montoUSD) {
+            var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+            var totalBs = (parseFloat(montoUSD) || 0) * tasa;
+            return totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
+        };
+
+        // INTEGRACIÓN A TU API PREFERIDA (rates.dolarvzla.com/bcv/current.json)
+        window.obtenerTasaBCV = async function() {
+            if(tasaManualBs > 0) {
+                document.getElementById('tasaDisplayTag').innerText = `💵 Tasa Fija: ${tasaManualBs.toFixed(2)} Bs./$`;
+                window.renderizarPaginaCompleta();
+                return;
+            }
+
+            try {
+                let resp = await fetch('https://rates.dolarvzla.com/bcv/current.json');
+                let data = await resp.json();
+                
+                // Extrae valor de la API (rate o similar)
+                let valTasa = data.rate || data.current || data.promedio || (data.bcv ? data.bcv.rate : null);
+                
+                if(valTasa) {
+                    tasaBCVActual = parseFloat(valTasa);
+                    localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
+                }
+            } catch(e) {
+                try {
+                    // Respaldos por si hay problemas de red
+                    let resp2 = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
+                    let data2 = await resp2.json();
+                    if(data2 && data2.promedio) {
+                        tasaBCVActual = parseFloat(data2.promedio);
+                        localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
+                    }
+                } catch(err) {
+                    console.warn("Usando tasa almacenada en caché offline.");
+                }
+            }
+
+            document.getElementById('tasaDisplayTag').innerText = `💵 BCV Oficial: ${tasaBCVActual.toFixed(2)} Bs./$`;
+            window.renderizarPaginaCompleta();
+        };
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -338,6 +418,7 @@
             if(clave === "612003" || clave === "yakuza") {
                 document.getElementById('admin-empresa-nombre').value = nombreEmpresa;
                 document.getElementById('admin-empresa-subtitulo').value = subtituloEmpresa;
+                document.getElementById('admin-tasa-manual').value = tasaManualBs || 0;
                 document.getElementById('admin-color-acento').value = colorAcento;
                 document.getElementById('admin-fondo-url').value = fondoUrl;
                 document.getElementById('admin-categorias-lista').value = categoriasTienda.join(', ');
@@ -374,6 +455,8 @@
             document.getElementById('adm-p-img1').value = "";
             document.getElementById('adm-p-img2').value = "";
             document.getElementById('adm-p-img3').value = "";
+            document.getElementById('adm-p-img4').value = "";
+            document.getElementById('adm-p-img5').value = "";
         };
 
         window.actualizarSelectCategoriasAdmin = function() {
@@ -385,6 +468,7 @@
         window.guardarProductoAdmin = function() {
             nombreEmpresa = document.getElementById('admin-empresa-nombre').value.trim() || "Yakuza Fade Co.";
             subtituloEmpresa = document.getElementById('admin-empresa-subtitulo').value.trim() || "Barbería, Ropa Oficial & Combos Urbanos";
+            tasaManualBs = parseFloat(document.getElementById('admin-tasa-manual').value) || 0;
             colorAcento = document.getElementById('admin-color-acento').value || "#ff3333";
             fondoUrl = document.getElementById('admin-fondo-url').value.trim();
 
@@ -413,6 +497,8 @@
             var img1 = document.getElementById('adm-p-img1').value.trim();
             var img2 = document.getElementById('adm-p-img2').value.trim();
             var img3 = document.getElementById('adm-p-img3').value.trim();
+            var img4 = document.getElementById('adm-p-img4').value.trim();
+            var img5 = document.getElementById('adm-p-img5').value.trim();
 
             if(nom && precio > 0) {
                 var tallas = tallasStr ? tallasStr.split(',').map(s=>s.trim()) : ["Única"];
@@ -421,6 +507,8 @@
                 if(img1) imgs.push(img1);
                 if(img2) imgs.push(img2);
                 if(img3) imgs.push(img3);
+                if(img4) imgs.push(img4);
+                if(img5) imgs.push(img5);
                 if(imgs.length === 0) imgs.push("https://files.catbox.moe/8j9706.jpg");
 
                 if(idProductoEdicion !== null) {
@@ -436,7 +524,7 @@
             }
 
             if(typeof window.guardarEnNubeYakuza === 'function') window.guardarEnNubeYakuza();
-            window.renderizarPaginaCompleta();
+            window.obtenerTasaBCV();
             window.limpiarFormAdmin();
             window.renderizarTarjetasAdmin();
             alert("✓ Cambios guardados en la tienda.");
@@ -451,7 +539,7 @@
                     <div class="admin-card-item">
                         <div>
                             <strong style="color:#fff; font-size:12px;">${p.nombre}</strong><br>
-                            <span style="color:#4cd137; font-size:11px;">$${p.precio.toFixed(2)} | Stock: ${p.stock}</span>
+                            <span style="color:#4cd137; font-size:11px;">${window.formatearPrecioUSD(p.precio)} | Stock: ${p.stock}</span>
                         </div>
                         <div>
                             <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="window.cargarProductoParaEditar(${p.id})">✏️ Editar</button>
@@ -479,6 +567,8 @@
             document.getElementById('adm-p-img1').value = p.imgs[0] || "";
             document.getElementById('adm-p-img2').value = p.imgs[1] || "";
             document.getElementById('adm-p-img3').value = p.imgs[2] || "";
+            document.getElementById('adm-p-img4').value = p.imgs[3] || "";
+            document.getElementById('adm-p-img5').value = p.imgs[4] || "";
         };
 
         window.eliminarProductoAdmin = function(id) {
@@ -529,10 +619,10 @@
 
             listaProductosYakuza.forEach(function(p) {
                 var badgeHtml = p.badge ? '<div class="badge-combo">' + p.badge + '</div>' : '';
-                var slidesHtml = p.imgs.map(img => `<img src="${img}" alt="Producto" onclick="window.abrirZoomImage('${img}')">`).join('');
+                var slidesHtml = p.imgs.map((img, i) => `<img src="${img}" alt="Producto" onclick="window.abrirZoomGaleria(${p.id}, ${i})">`).join('');
                 
                 var tallasOpt = p.tallas.map(t => '<a href="#" onclick="window.seleccionarOpcion(event, this, \'' + t + '\')">' + t + '</a>').join('');
-                var coloresOpt = p.colores.map(c => '<a href="#" onclick="window.seleccionarOpcion(event, this, \'' + c + '\')">' + c + '</a>').join('');
+                var coloresOpt = p.colores.map((c, idxColor) => '<a href="#" onclick="window.seleccionarColorVariacion(event, this, \'' + c + '\', ' + p.id + ', ' + idxColor + ')">' + c + '</a>').join('');
 
                 html += `
                     <div class="producto" data-categoria="${p.categoria.toLowerCase().trim()}" data-nombre="${p.nombre.toLowerCase()}">
@@ -546,12 +636,16 @@
                         </div>
                         
                         <div class="stock-indicator ${p.stock < 1 ? 'agotado' : ''}">
-                            📦 Stock: <span>${p.stock}</span> unids.
+                            📦 Stock: <span>${p.stock} unids.</span>
                         </div>
 
                         <h3>${p.nombre}</h3>
                         <p>${p.desc}</p>
-                        <div class="precio">$${p.precio.toFixed(2)}</div>
+                        
+                        <div class="precio-box">
+                            <span class="precio-usd">${window.formatearPrecioUSD(p.precio)}</span>
+                            <span class="precio-bs">≈ ${window.formatearPrecioBS(p.precio)}</span>
+                        </div>
                         
                         <div class="opciones-grid">
                             <div class="dropdown-contenedor">
@@ -582,10 +676,59 @@
             window.activarSwipeCarruseles();
         };
 
-        window.abrirZoomImage = function(src) {
-            document.getElementById('imgZoomTarget').src = src;
-            document.getElementById('modalZoom').style.display = 'flex';
+        window.seleccionarColorVariacion = function(e, a, valColor, idProd, idxColor) {
+            e.preventDefault();
+            window.seleccionarOpcion(e, a, valColor);
+            
+            var p = listaProductosYakuza.find(x => x.id === idProd);
+            if(p && p.imgs && p.imgs[idxColor]) {
+                var el = document.getElementById(`slides-${idProd}`);
+                if(el) {
+                    indicesCarrusel[`slides-${idProd}`] = idxColor;
+                    el.style.transform = `translateX(${-idxColor * 100}%)`;
+                }
+            }
         };
+
+        window.abrirZoomGaleria = function(idProd, idxImg) {
+            var p = listaProductosYakuza.find(x => x.id === idProd);
+            if(!p || !p.imgs || p.imgs.length === 0) return;
+
+            zoomImgsActuales = p.imgs;
+            zoomIdxActual = idxImg;
+
+            var targetImg = document.getElementById('imgZoomTarget');
+            targetImg.src = zoomImgsActuales[zoomIdxActual];
+
+            var modal = document.getElementById('modalZoom');
+            modal.style.display = 'flex';
+        };
+
+        window.cerrarZoomModal = function(e) {
+            if(e.target.id === 'modalZoom') {
+                document.getElementById('modalZoom').style.display = 'none';
+            }
+        };
+
+        (function setupZoomSwipe() {
+            var startX = 0;
+            var modal = document.getElementById('modalZoom');
+            if(!modal) return;
+            
+            modal.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+            modal.addEventListener('touchend', e => {
+                var endX = e.changedTouches[0].clientX;
+                if(zoomImgsActuales.length <= 1) return;
+
+                if(startX - endX > 40) {
+                    zoomIdxActual = (zoomIdxActual + 1) % zoomImgsActuales.length;
+                    document.getElementById('imgZoomTarget').src = zoomImgsActuales[zoomIdxActual];
+                } else if(endX - startX > 40) {
+                    zoomIdxActual = (zoomIdxActual - 1 + zoomImgsActuales.length) % zoomImgsActuales.length;
+                    document.getElementById('imgZoomTarget').src = zoomImgsActuales[zoomIdxActual];
+                }
+            }, {passive: true});
+        })();
 
         window.activarSwipeCarruseles = function() {
             listaProductosYakuza.forEach(p => {
@@ -656,25 +799,37 @@
         };
 
         window.actualizarBarraCarrito = function() {
-            var totalItems = 0; var totalMonto = 0;
-            carrito.forEach(i => { totalItems += i.cantidad; totalMonto += (i.precio * i.cantidad); });
+            var totalItems = 0; var totalMontoUSD = 0;
+            carrito.forEach(i => { totalItems += i.cantidad; totalMontoUSD += (i.precio * i.cantidad); });
             
+            var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+            var totalMontoBS = totalMontoUSD * tasa;
+
             document.getElementById('contadorCarritoTotal').innerText = totalItems;
-            document.getElementById('montoTotalCarrito').innerText = "$" + totalMonto.toFixed(2);
-            document.getElementById('modalMontoTotal').innerText = totalMonto.toFixed(2);
+            document.getElementById('montoTotalCarritoUSD').innerText = window.formatearPrecioUSD(totalMontoUSD);
+            document.getElementById('montoTotalCarritoBS').innerText = totalMontoBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
+            
+            document.getElementById('modalMontoTotalUSD').innerText = window.formatearPrecioUSD(totalMontoUSD);
+            document.getElementById('modalMontoTotalBS').innerText = totalMontoBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
+            
             document.getElementById('barraCarrito').style.display = totalItems > 0 ? 'flex' : 'none';
         };
 
         window.abrirModalCarrito = function() {
             var cont = document.getElementById('listaItemsModal');
             var html = "";
+            var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
+
             carrito.forEach((i, idx) => {
+                var subUSD = i.precio * i.cantidad;
+                var subBS = subUSD * tasa;
                 html += `
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; padding:8px 0; font-size:12px;">
                         <div>
                             <strong style="color:#fff;">${i.nombre}</strong><br>
                             <small style="color:#aaa;">${i.variacion} | Cant: ${i.cantidad}</small><br>
-                            <span style="color:#4cd137; font-weight:bold;">$${(i.precio*i.cantidad).toFixed(2)}</span>
+                            <span style="color:#fff; font-weight:bold;">${window.formatearPrecioUSD(subUSD)}</span>
+                            <span style="color:#4cd137; font-size:11px; font-weight:bold; margin-left:4px;">(≈ ${subBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)</span>
                         </div>
                         <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="window.eliminarDelCarrito(${idx})">✕</button>
                     </div>
@@ -692,14 +847,22 @@
 
         window.enviarPedidoWhatsApp = function(metodo) {
             if(carrito.length === 0) return;
+            var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
             var msj = "🔥 *" + nombreEmpresa.toUpperCase() + " - NUEVO PEDIDO* 🔥\n\n";
-            var total = 0;
+            var totalUSD = 0;
+
             carrito.forEach(i => {
-                var sub = i.precio * i.cantidad;
-                total += sub;
-                msj += `▪️ *${i.nombre}*\n   ${i.variacion} | Cant: ${i.cantidad} x $${i.precio.toFixed(2)} = $${sub.toFixed(2)}\n\n`;
+                var subUSD = i.precio * i.cantidad;
+                var subBS = subUSD * tasa;
+                totalUSD += subUSD;
+                msj += `▪️ *${i.nombre}*\n   ${i.variacion} | Cant: ${i.cantidad} x ${window.formatearPrecioUSD(i.precio)} = ${window.formatearPrecioUSD(subUSD)} (≈ ${subBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.)\n\n`;
             });
-            msj += `💵 *TOTAL A PAGAR: $${total.toFixed(2)}*\n💳 *Método de pago:* ${metodo}`;
+
+            var totalBS = totalUSD * tasa;
+            msj += `💵 *TOTAL EN USD:* ${window.formatearPrecioUSD(totalUSD)}\n`;
+            msj += `🇻🇪 *TOTAL EN BS.:* ${totalBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs. (Tasa: ${tasa.toFixed(2)} Bs./$)\n`;
+            msj += `💳 *Método de pago:* ${metodo}`;
+
             var url = `https://wa.me/${redesEmpresa.wsp}?text=${encodeURIComponent(msj)}`;
             window.open(url, '_blank');
         };
