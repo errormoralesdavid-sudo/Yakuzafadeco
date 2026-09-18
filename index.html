@@ -30,7 +30,6 @@
             box-sizing: border-box;
         }
 
-        /* Capa oscura sobre la foto de fondo para legibilidad */
         body::before {
             content: "";
             position: fixed;
@@ -42,12 +41,12 @@
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CUADRITOS SECRETOS INTEGRADOS EN EL FLUJO (SE MUEVEN CON EL SCROLL) */
+        /* ESQUINAS SECRETAS */
         .corner-secret {
             position: absolute;
             width: 10px;
             height: 10px;
-            background-color: #1e1e1e; /* Gris disimulado */
+            background-color: #1e1e1e;
             opacity: 0.4;
             z-index: 100;
             border-radius: 2px;
@@ -178,6 +177,7 @@
             try {
                 await setDoc(doc(db, "yakuza_store", "catalogo_productos"), {
                     nombreEmpresa: window.nombreEmpresa || "Yakuza Fade Co.",
+                    subtituloEmpresa: window.subtituloEmpresa || "Barbería, Ropa Oficial & Combos Urbanos",
                     colorAcento: window.colorAcento || "#ff3333",
                     fondoUrl: window.fondoUrl || "",
                     categorias: window.categoriasTienda || ["Combos", "Ropa", "Medias", "Barbería"],
@@ -191,6 +191,7 @@
             if (snapshot.exists()) {
                 const data = snapshot.data();
                 if (data.nombreEmpresa) window.nombreEmpresa = data.nombreEmpresa;
+                if (data.subtituloEmpresa) window.subtituloEmpresa = data.subtituloEmpresa;
                 if (data.colorAcento) window.colorAcento = data.colorAcento;
                 if (data.fondoUrl !== undefined) window.fondoUrl = data.fondoUrl;
                 if (data.categorias) window.categoriasTienda = data.categorias;
@@ -203,18 +204,17 @@
 </head>
 <body>
 
-    <!-- 4 ESQUINAS SECRETAS QUE SE MUEVEN CON EL SCROLL -->
+    <!-- 4 ESQUINAS SECRETAS -->
     <div class="corner-secret corner-tl"></div>
     <div class="corner-secret corner-tr" onclick="window.solicitarAccesoAdmin()"></div> <!-- ACTIVA -->
 
     <h1 id="brandHeader">Yakuza Fade Co.</h1>
-    <div class="subtitulo">Barbería, Ropa Oficial & Combos Urbanos</div>
+    <div class="subtitulo" id="brandSubHeader">Barbería, Ropa Oficial & Combos Urbanos</div>
 
     <div class="buscador-container">
         <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos..." onkeyup="window.filtrarProductos()">
     </div>
 
-    <!-- BOTONES DE CATEGORÍAS DINÁMICAS -->
     <div class="filtros-container" id="contenedorFiltrosCat"></div>
 
     <div class="contenedor-tienda" id="listaProductosContainer"></div>
@@ -256,6 +256,9 @@
             
             <label>🏷️ Nombre de la Empresa / Página:</label>
             <input type="text" id="admin-empresa-nombre" placeholder="Ej. Yakuza Fade Co.">
+
+            <label>📝 Subtítulo de la Página:</label>
+            <input type="text" id="admin-empresa-subtitulo" placeholder="Ej. Barbería, Ropa Oficial & Combos Urbanos">
 
             <label>🎨 Color del Tema / Detalles de la Página:</label>
             <input type="color" id="admin-color-acento" value="#ff3333" style="height:40px; cursor:pointer;">
@@ -305,7 +308,6 @@
     </div>
 
     <footer>
-        <!-- ESQUINAS INFERIORES QUE DIBUJAN EL CIERRE DEL DOCUMENTO -->
         <div class="corner-secret corner-bl"></div>
         <div class="corner-secret corner-br"></div>
 
@@ -317,6 +319,7 @@
         var carrito = [];
         var listaProductosYakuza = [];
         var nombreEmpresa = "Yakuza Fade Co.";
+        var subtituloEmpresa = "Barbería, Ropa Oficial & Combos Urbanos";
         var colorAcento = "#ff3333";
         var fondoUrl = "";
         var categoriasTienda = ["Combos", "Ropa", "Medias", "Barbería"];
@@ -334,6 +337,7 @@
             var clave = prompt("🔐 Clave Administrador:");
             if(clave === "612003" || clave === "yakuza") {
                 document.getElementById('admin-empresa-nombre').value = nombreEmpresa;
+                document.getElementById('admin-empresa-subtitulo').value = subtituloEmpresa;
                 document.getElementById('admin-color-acento').value = colorAcento;
                 document.getElementById('admin-fondo-url').value = fondoUrl;
                 document.getElementById('admin-categorias-lista').value = categoriasTienda.join(', ');
@@ -380,6 +384,7 @@
 
         window.guardarProductoAdmin = function() {
             nombreEmpresa = document.getElementById('admin-empresa-nombre').value.trim() || "Yakuza Fade Co.";
+            subtituloEmpresa = document.getElementById('admin-empresa-subtitulo').value.trim() || "Barbería, Ropa Oficial & Combos Urbanos";
             colorAcento = document.getElementById('admin-color-acento').value || "#ff3333";
             fondoUrl = document.getElementById('admin-fondo-url').value.trim();
 
@@ -490,10 +495,10 @@
             document.body.style.backgroundImage = fondoUrl ? `url('${fondoUrl}')` : 'none';
 
             document.getElementById('brandHeader').innerText = nombreEmpresa;
+            document.getElementById('brandSubHeader').innerText = subtituloEmpresa;
             document.getElementById('pageTitle').innerText = nombreEmpresa + " - Tienda Oficial";
             document.getElementById('footerCopy').innerText = nombreEmpresa + ". Todos los derechos reservados.";
 
-            /* RENDERIZAR BOTONES DE FILTRO CATEGORÍAS */
             var filtrosContainer = document.getElementById('contenedorFiltrosCat');
             var btnFiltrosHtml = `<button class="btn-filtro activo" onclick="window.filtrarCategoria('todos', event)">Todos</button>`;
             categoriasTienda.forEach(c => {
@@ -501,7 +506,6 @@
             });
             filtrosContainer.innerHTML = btnFiltrosHtml;
 
-            /* REDES SOCIALES FOOTER */
             var redHtml = "";
             if(redesEmpresa.wsp) redHtml += `<a href="https://wa.me/${redesEmpresa.wsp}" target="_blank">💬 WhatsApp</a>`;
             if(redesEmpresa.ig) redHtml += `<a href="${redesEmpresa.ig}" target="_blank">📸 Instagram</a>`;
