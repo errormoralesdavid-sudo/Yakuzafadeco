@@ -85,6 +85,56 @@
             margin-bottom: 15px;
         }
 
+        /* BANNER PUBLICITARIO PRINCIPAL */
+        .banner-promo-container {
+            position: relative;
+            max-width: 700px;
+            height: 140px;
+            margin: 0 auto 15px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.6);
+            touch-action: pan-y;
+            animation: fadeInDown 1.3s ease-in-out;
+        }
+        @media (max-width: 600px) { .banner-promo-container { height: 110px; } }
+
+        .banner-promo-slides {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+        .banner-promo-slides img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .banner-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 5;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .dot.activo {
+            background: var(--color-acento);
+            width: 18px;
+            border-radius: 4px;
+        }
+
         .buscador-container { margin-bottom: 15px; animation: fadeInDown 1.3s ease-in-out; }
         .buscador-container input {
             width: 90%; max-width: 400px; padding: 10px; border-radius: 20px;
@@ -196,6 +246,7 @@
                     colorAcento: window.colorAcento || "#ff3333",
                     fondoUrl: window.fondoUrl || "",
                     tasaManualBs: window.tasaManualBs || 0,
+                    bannersPromo: window.bannersPromo || [],
                     categorias: window.categoriasTienda || ["Combos", "Ropa", "Medias", "Barbería"],
                     productos: window.listaProductosYakuza || [],
                     redes: window.redesEmpresa || {}
@@ -211,6 +262,7 @@
                 if (data.colorAcento) window.colorAcento = data.colorAcento;
                 if (data.fondoUrl !== undefined) window.fondoUrl = data.fondoUrl;
                 if (data.tasaManualBs !== undefined) window.tasaManualBs = parseFloat(data.tasaManualBs) || 0;
+                if (data.bannersPromo) window.bannersPromo = data.bannersPromo;
                 if (data.categorias) window.categoriasTienda = data.categorias;
                 if (data.productos) window.listaProductosYakuza = data.productos;
                 if (data.redes) window.redesEmpresa = data.redes;
@@ -228,6 +280,12 @@
     <h1 id="brandHeader">Yakuza Fade Co.</h1>
     <div class="subtitulo" id="brandSubHeader">Barbería, Ropa Oficial & Combos Urbanos</div>
     <div class="tasa-bcv-tag" id="tasaDisplayTag">💵 Tasa BCV: Cargando...</div>
+
+    <!-- BANNER PUBLICITARIO AUTOMÁTICO CADA 3.5 SEGUNDOS -->
+    <div class="banner-promo-container" id="bannerPromoWrapper" style="display: none;">
+        <div class="banner-promo-slides" id="bannerPromoSlides"></div>
+        <div class="banner-dots" id="bannerPromoDots"></div>
+    </div>
 
     <div class="buscador-container">
         <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos..." onkeyup="window.filtrarProductos()">
@@ -284,6 +342,11 @@
 
             <label>💵 Tasa Dólar Manual (Opcional - Deja en 0 para Tasa BCV Automática):</label>
             <input type="number" step="0.01" id="admin-tasa-manual" placeholder="Ej. 36.50 (0 = Automático BCV)">
+
+            <label>📢 Banners Publicitarios Superiores (URLs de Imágenes):</label>
+            <input type="text" id="adm-banner-1" placeholder="URL Banner 1 (Anuncio / Promoción)">
+            <input type="text" id="adm-banner-2" placeholder="URL Banner 2 (Opcional)">
+            <input type="text" id="adm-banner-3" placeholder="URL Banner 3 (Opcional)">
 
             <label>🎨 Color del Tema / Detalles de la Página:</label>
             <input type="color" id="admin-color-acento" value="#ff3333" style="height:40px; cursor:pointer;">
@@ -351,6 +414,9 @@
         var fondoUrl = "";
         var tasaManualBs = 0;
         var tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 36.50;
+        var bannersPromo = [];
+        var timerBannerAuto = null;
+        var indexBannerActual = 0;
         var categoriasTienda = ["Combos", "Ropa", "Medias", "Barbería"];
         var redesEmpresa = { wsp: "584123167126", ig: "", tk: "", fb: "", yt: "" };
         var idProductoEdicion = null;
@@ -372,7 +438,6 @@
             return totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
         };
 
-        // INTEGRACIÓN DE TASA BCV ANTI-NaN CON TRIPLE RESPALDO Y CORS SAFE
         window.obtenerTasaBCV = async function() {
             if(tasaManualBs > 0) {
                 document.getElementById('tasaDisplayTag').innerText = `💵 Tasa Fija: ${tasaManualBs.toFixed(2)} Bs./$`;
@@ -383,7 +448,6 @@
             var tasaObtenida = null;
 
             try {
-                // API 1: DolarAPI (Muy estable y compatible con GitHub Pages / HTTPS)
                 let resp = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
                 let data = await resp.json();
                 if(data && data.promedio) {
@@ -391,14 +455,13 @@
                 }
             } catch(e) {
                 try {
-                    // API 2: PyDolarVenezuela / BCV
                     let resp2 = await fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv');
                     let data2 = await resp2.json();
                     if(data2 && data2.moneda && data2.moneda.price) {
                         tasaObtenida = parseFloat(data2.moneda.price);
                     }
                 } catch(err) {
-                    console.warn("Falla en la consulta API.");
+                    console.warn("Falla en consulta API.");
                 }
             }
 
@@ -406,7 +469,6 @@
                 tasaBCVActual = tasaObtenida;
                 localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
             } else {
-                // Tasa de seguridad guardada en caché si falla la red
                 tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 36.50;
             }
 
@@ -430,6 +492,10 @@
                 document.getElementById('admin-fondo-url').value = fondoUrl;
                 document.getElementById('admin-categorias-lista').value = categoriasTienda.join(', ');
                 
+                document.getElementById('adm-banner-1').value = bannersPromo[0] || "";
+                document.getElementById('adm-banner-2').value = bannersPromo[1] || "";
+                document.getElementById('adm-banner-3').value = bannersPromo[2] || "";
+
                 document.getElementById('adm-red-wsp').value = redesEmpresa.wsp || "";
                 document.getElementById('adm-red-ig').value = redesEmpresa.ig || "";
                 document.getElementById('adm-red-tk').value = redesEmpresa.tk || "";
@@ -478,6 +544,14 @@
             tasaManualBs = parseFloat(document.getElementById('admin-tasa-manual').value) || 0;
             colorAcento = document.getElementById('admin-color-acento').value || "#ff3333";
             fondoUrl = document.getElementById('admin-fondo-url').value.trim();
+
+            var b1 = document.getElementById('adm-banner-1').value.trim();
+            var b2 = document.getElementById('adm-banner-2').value.trim();
+            var b3 = document.getElementById('adm-banner-3').value.trim();
+            bannersPromo = [];
+            if(b1) bannersPromo.push(b1);
+            if(b2) bannersPromo.push(b2);
+            if(b3) bannersPromo.push(b3);
 
             var catsInput = document.getElementById('admin-categorias-lista').value.trim();
             if(catsInput) {
@@ -596,6 +670,8 @@
             document.getElementById('pageTitle').innerText = nombreEmpresa + " - Tienda Oficial";
             document.getElementById('footerCopy').innerText = nombreEmpresa + ". Todos los derechos reservados.";
 
+            window.renderizarBannersPromocionales();
+
             var filtrosContainer = document.getElementById('contenedorFiltrosCat');
             var btnFiltrosHtml = `<button class="btn-filtro activo" onclick="window.filtrarCategoria('todos', event)">Todos</button>`;
             categoriasTienda.forEach(c => {
@@ -612,6 +688,39 @@
             document.getElementById('footerRedes').innerHTML = redHtml;
 
             window.renderizarProductosTienda();
+        };
+
+        // RENDERIZADO Y AUTOMATIZACIÓN DEL CARRUSEL DE BANNERS PUBLICITARIOS
+        window.renderizarBannersPromocionales = function() {
+            var wrap = document.getElementById('bannerPromoWrapper');
+            var slidesBox = document.getElementById('bannerPromoSlides');
+            var dotsBox = document.getElementById('bannerPromoDots');
+
+            if(!bannersPromo || bannersPromo.length === 0) {
+                wrap.style.display = 'none';
+                if(timerBannerAuto) clearInterval(timerBannerAuto);
+                return;
+            }
+
+            wrap.style.display = 'block';
+            slidesBox.innerHTML = bannersPromo.map(img => `<img src="${img}" alt="Anuncio Promocional">`).join('');
+            dotsBox.innerHTML = bannersPromo.map((_, i) => `<div class="dot ${i===0?'activo':''}" id="dot-banner-${i}"></div>`).join('');
+
+            indexBannerActual = 0;
+            slidesBox.style.transform = `translateX(0%)`;
+
+            if(timerBannerAuto) clearInterval(timerBannerAuto);
+            
+            if(bannersPromo.length > 1) {
+                timerBannerAuto = setInterval(() => {
+                    indexBannerActual = (indexBannerActual + 1) % bannersPromo.length;
+                    slidesBox.style.transform = `translateX(${-indexBannerActual * 100}%)`;
+                    document.querySelectorAll('.dot').forEach((d, idx) => {
+                        if(idx === indexBannerActual) d.classList.add('activo');
+                        else d.classList.remove('activo');
+                    });
+                }, 3500); // CAMBIA CADA 3.5 SEGUNDOS
+            }
         };
 
         window.renderizarProductosTienda = function() {
