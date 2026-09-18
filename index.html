@@ -9,43 +9,59 @@
     <meta name="theme-color" content="#ff3333">
 
     <style>
+        :root {
+            --color-acento: #ff3333;
+            --color-acento-hover: #cc0000;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             background-color: #0b0b0b;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: #ffffff;
             margin: 0;
             padding: 15px;
             text-align: center;
             padding-bottom: 90px;
             position: relative;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Capa oscura sobre la foto de fondo para legibilidad */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 11, 11, 0.88);
+            z-index: -1;
         }
 
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes modalPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* CUADRITOS SECRETOS EN LAS 4 ESQUINAS */
+        /* CUADRITOS SECRETOS INTEGRADOS EN EL FLUJO (SE MUEVEN CON EL SCROLL) */
         .corner-secret {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            background-color: #ff3333;
-            opacity: 0.25;
-            z-index: 2500;
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #1e1e1e; /* Gris disimulado */
+            opacity: 0.4;
+            z-index: 100;
             border-radius: 2px;
             cursor: pointer;
-            transition: 0.3s;
         }
-        .corner-secret:hover { opacity: 0.9; transform: scale(1.2); }
-        .corner-tl { top: 6px; left: 6px; }
-        .corner-tr { top: 6px; right: 6px; } /* ESQUINA ACTIVA DE ADMIN */
-        .corner-bl { bottom: 6px; left: 6px; }
-        .corner-br { bottom: 6px; right: 6px; }
+        .corner-tl { top: 8px; left: 8px; }
+        .corner-tr { top: 8px; right: 8px; } /* ACTIVA DE ADMIN */
+        .corner-bl { bottom: 8px; left: 8px; }
+        .corner-br { bottom: 8px; right: 8px; }
 
         h1 {
             animation: fadeInDown 1s ease-in-out;
-            color: #ff3333;
-            text-shadow: 0px 0px 15px rgba(255, 51, 51, 0.6);
+            color: var(--color-acento);
+            text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
             margin-bottom: 5px;
             font-size: 26px;
             letter-spacing: 2px;
@@ -64,29 +80,29 @@
             border: 1px solid #333; background: #161616; color: white;
             font-size: 14px; outline: none; text-align: center; transition: 0.3s;
         }
-        .buscador-container input:focus { border-color: #ff3333; box-shadow: 0px 0px 8px rgba(255,51,51,0.4); }
+        .buscador-container input:focus { border-color: var(--color-acento); }
 
         .filtros-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; animation: fadeInDown 1.4s ease-in-out; }
         .btn-filtro { background: #1a1a1a; color: white; border: 1px solid #333; padding: 6px 14px; border-radius: 15px; font-size: 12px; cursor: pointer; transition: 0.3s; }
-        .btn-filtro:hover, .btn-filtro.activo { background: #ff3333; border-color: #ff3333; box-shadow: 0px 0px 10px rgba(255,51,51,0.5); }
+        .btn-filtro:hover, .btn-filtro.activo { background: var(--color-acento); border-color: var(--color-acento); }
 
         .contenedor-tienda { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 700px; margin: 0 auto; }
         @media (max-width: 600px) { .contenedor-tienda { grid-template-columns: 1fr; } }
 
         .producto {
-            background: #161616; border: 1px solid #282828; border-radius: 12px; padding: 12px;
+            background: rgba(22, 22, 22, 0.95); border: 1px solid #282828; border-radius: 12px; padding: 12px;
             box-shadow: 0px 4px 15px rgba(0,0,0,0.5); text-align: left; animation: fadeInUp 0.8s ease-in-out;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
         }
 
         .badge-combo {
-            position: absolute; top: 15px; left: 15px; background: #ff3333; color: white;
+            position: absolute; top: 15px; left: 15px; background: var(--color-acento); color: white;
             font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 4px; z-index: 10;
             box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
         }
 
         .stock-indicator { font-size: 11px; color: #4cd137; margin-bottom: 6px; font-weight: bold; }
-        .stock-indicator.agotado { color: #ff3333; }
+        .stock-indicator.agotado { color: var(--color-acento); }
 
         .carrusel-container { position: relative; width: 100%; height: 160px; overflow: hidden; border-radius: 8px; background: #222; touch-action: pan-y; }
         .carrusel-slides { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease-in-out; }
@@ -107,38 +123,39 @@
         .btn-desplegable { background-color: #222; color: white; border: 1px solid #333; width: 100%; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; }
         .dropdown-content { display: none; position: absolute; bottom: 100%; left: 0; background-color: #1a1a1a; width: 100%; z-index: 99; border-radius: 6px; overflow: hidden; margin-bottom: 4px; border: 1px solid #444; }
         .dropdown-content a { color: white; padding: 9px; text-decoration: none; display: block; font-size: 11px; text-align: left; border-bottom: 1px solid #282828; }
-        .dropdown-content a:hover { background-color: #ff3333; }
+        .dropdown-content a:hover { background-color: var(--color-acento); }
         .show { display: block !important; }
 
         .cantidad-container { display: flex; align-items: center; justify-content: space-between; background: #222; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; border: 1px solid #333; }
         .cantidad-container button { background: #333; color: white; border: none; padding: 3px 9px; font-weight: bold; cursor: pointer; border-radius: 4px; }
 
-        .btn-agregar-carrito { background-color: #ff3333; color: white; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; transition: 0.2s; }
-        .btn-agregar-carrito:hover { background-color: #cc0000; }
+        .btn-agregar-carrito { background-color: var(--color-acento); color: white; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; transition: 0.2s; }
+        .btn-agregar-carrito:hover { filter: brightness(0.9); }
 
-        /* PANEL ADMIN OCULTO */
+        /* PANEL ADMIN */
         .admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 3000; justify-content: center; align-items: center; }
-        .admin-box { background: #141414; border: 1px solid #ff3333; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; text-align: left; box-shadow: 0px 0px 25px rgba(255,51,51,0.3); }
-        .admin-box h2 { color: #ff3333; margin-top: 0; font-size: 18px; text-align: center; border-bottom: 1px dashed #333; padding-bottom: 8px; }
-        .admin-box input, .admin-box select { width: 100%; background: #0b0b0b; border: 1px solid #333; padding: 8px; border-radius: 6px; color: #fff; margin-bottom: 8px; box-sizing: border-box; font-size: 12px; }
-        .btn-admin-act { background: #ff3333; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 6px; transition: 0.2s; }
+        .admin-box { background: #141414; border: 1px solid var(--color-acento); padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; text-align: left; }
+        .admin-box h2 { color: var(--color-acento); margin-top: 0; font-size: 18px; text-align: center; border-bottom: 1px dashed #333; padding-bottom: 8px; }
+        .admin-box label { font-size: 11px; color: var(--color-acento); font-weight: bold; margin-top: 8px; display: block; }
+        .admin-box input, .admin-box select { width: 100%; background: #0b0b0b; border: 1px solid #333; padding: 8px; border-radius: 6px; color: #fff; margin-top: 3px; margin-bottom: 8px; box-sizing: border-box; font-size: 12px; }
+        .btn-admin-act { background: var(--color-acento); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 6px; transition: 0.2s; }
         
         .admin-card-item { background: #1e1e1e; border: 1px solid #333; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         /* CARRITO FLOTANTE Y MODALES */
-        .carrito-flotante { position: fixed; bottom: 0; left: 0; width: 100%; background: #141414; border-top: 2px solid #ff3333; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0px -5px 25px rgba(0,0,0,0.9); z-index: 1000; box-sizing: border-box; }
+        .carrito-flotante { position: fixed; bottom: 0; left: 0; width: 100%; background: #141414; border-top: 2px solid var(--color-acento); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-sizing: border-box; }
         .modal-carrito { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
         .modal-contenido { background: #141414; padding: 22px; border-radius: 14px; width: 90%; max-width: 420px; max-height: 85vh; overflow-y: auto; border: 1px solid #333; text-align: left; }
 
-        /* MODAL DE IMAGEN GRANDE (ZOOM) */
+        /* MODAL ZOOM */
         .modal-zoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; }
-        .modal-zoom img { max-width: 92%; max-height: 85vh; border-radius: 8px; border: 2px solid #ff3333; box-shadow: 0px 0px 20px rgba(255,51,51,0.5); }
+        .modal-zoom img { max-width: 92%; max-height: 85vh; border-radius: 8px; border: 2px solid var(--color-acento); }
 
-        /* FOOTER REDES */
-        footer { margin-top: 30px; padding: 20px 10px; border-top: 1px solid #1a1a1a; }
+        /* FOOTER */
+        footer { margin-top: 30px; padding: 20px 10px; border-top: 1px solid #1a1a1a; position: relative; }
         .redes-sociales { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .redes-sociales a { background: #161616; color: #ccc; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-size: 11px; border: 1px solid #282828; transition: 0.3s; }
-        .redes-sociales a:hover { background: #ff3333; color: white; border-color: #ff3333; }
+        .redes-sociales a:hover { background: var(--color-acento); color: white; border-color: var(--color-acento); }
     </style>
 
     <script type="module">
@@ -161,16 +178,22 @@
             try {
                 await setDoc(doc(db, "yakuza_store", "catalogo_productos"), {
                     nombreEmpresa: window.nombreEmpresa || "Yakuza Fade Co.",
+                    colorAcento: window.colorAcento || "#ff3333",
+                    fondoUrl: window.fondoUrl || "",
+                    categorias: window.categoriasTienda || ["Combos", "Ropa", "Medias", "Barbería"],
                     productos: window.listaProductosYakuza || [],
                     redes: window.redesEmpresa || {}
                 });
-            } catch(e) { console.warn("Guardado en caché offline."); }
+            } catch(e) { console.warn("Guardado offline."); }
         };
 
         onSnapshot(doc(db, "yakuza_store", "catalogo_productos"), (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
                 if (data.nombreEmpresa) window.nombreEmpresa = data.nombreEmpresa;
+                if (data.colorAcento) window.colorAcento = data.colorAcento;
+                if (data.fondoUrl !== undefined) window.fondoUrl = data.fondoUrl;
+                if (data.categorias) window.categoriasTienda = data.categorias;
                 if (data.productos) window.listaProductosYakuza = data.productos;
                 if (data.redes) window.redesEmpresa = data.redes;
                 window.renderizarPaginaCompleta();
@@ -180,11 +203,9 @@
 </head>
 <body>
 
-    <!-- 4 ESQUINAS SECRETAS -->
-    <div class="corner-secret corner-tl" onclick="window.esquinaSecreta(1)"></div>
+    <!-- 4 ESQUINAS SECRETAS QUE SE MUEVEN CON EL SCROLL -->
+    <div class="corner-secret corner-tl"></div>
     <div class="corner-secret corner-tr" onclick="window.solicitarAccesoAdmin()"></div> <!-- ACTIVA -->
-    <div class="corner-secret corner-bl" onclick="window.esquinaSecreta(3)"></div>
-    <div class="corner-secret corner-br" onclick="window.esquinaSecreta(4)"></div>
 
     <h1 id="brandHeader">Yakuza Fade Co.</h1>
     <div class="subtitulo">Barbería, Ropa Oficial & Combos Urbanos</div>
@@ -193,13 +214,8 @@
         <input type="text" id="inputBuscador" placeholder="🔍 Buscar productos..." onkeyup="window.filtrarProductos()">
     </div>
 
-    <div class="filtros-container">
-        <button class="btn-filtro activo" onclick="window.filtrarCategoria('todos', event)">Todos</button>
-        <button class="btn-filtro" onclick="window.filtrarCategoria('combos', event)">🔥 Combos</button>
-        <button class="btn-filtro" onclick="window.filtrarCategoria('ropa', event)">Ropa</button>
-        <button class="btn-filtro" onclick="window.filtrarCategoria('medias', event)">🧦 Medias</button>
-        <button class="btn-filtro" onclick="window.filtrarCategoria('barberia', event)">Barbería</button>
-    </div>
+    <!-- BOTONES DE CATEGORÍAS DINÁMICAS -->
+    <div class="filtros-container" id="contenedorFiltrosCat"></div>
 
     <div class="contenedor-tienda" id="listaProductosContainer"></div>
 
@@ -208,13 +224,13 @@
         <div style="font-size:13px; font-weight:bold; color:#ddd;">
             🛒 Carrito: <span id="contadorCarritoTotal">0</span> prod. | <span id="montoTotalCarrito" style="color: #4cd137; font-size:15px;">$0</span>
         </div>
-        <button style="background:#ff3333; color:#fff; border:none; padding:8px 18px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="window.abrirModalCarrito()">Ver Pedido</button>
+        <button style="background:var(--color-acento); color:#fff; border:none; padding:8px 18px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="window.abrirModalCarrito()">Ver Pedido</button>
     </div>
 
     <!-- MODAL RESUMEN COMPRA -->
     <div class="modal-carrito" id="modalCarrito">
         <div class="modal-contenido">
-            <h2 style="color:#ff3333; text-align:center;">🧾 Resumen de Pedido</h2>
+            <h2 style="color:var(--color-acento); text-align:center;">🧾 Resumen de Pedido</h2>
             <div id="listaItemsModal"></div>
             <div style="font-size: 16px; font-weight: bold; text-align: right; margin: 15px 0; color: #4cd137; background: #111; padding: 8px; border-radius: 6px;">
                 Total a Pagar: $<span id="modalMontoTotal">0</span>
@@ -233,20 +249,29 @@
         <img id="imgZoomTarget" src="" alt="Zoom Producto">
     </div>
 
-    <!-- PANEL DE ADMINISTRACIÓN OCULTO -->
+    <!-- PANEL ADMIN OCULTO -->
     <div class="admin-panel-overlay" id="modalAdminPanel">
         <div class="admin-box">
             <h2>⚙️ Panel Admin - Configuración</h2>
             
-            <label style="font-size:11px; color:#ff3333; font-weight:bold;">🏷️ Nombre de la Empresa / Página:</label>
+            <label>🏷️ Nombre de la Empresa / Página:</label>
             <input type="text" id="admin-empresa-nombre" placeholder="Ej. Yakuza Fade Co.">
 
-            <label style="font-size:11px; color:#ff3333; font-weight:bold; margin-top:6px; display:block;">📱 Redes Sociales (URLs / Teléfono):</label>
-            <input type="text" id="adm-red-wsp" placeholder="Número WhatsApp (Ej. 584123167126)">
-            <input type="text" id="adm-red-ig" placeholder="URL Instagram (Ej. https://instagram.com/tuusuario)">
-            <input type="text" id="adm-red-tk" placeholder="URL TikTok (Ej. https://tiktok.com/@tuusuario)">
-            <input type="text" id="adm-red-fb" placeholder="URL Facebook">
-            <input type="text" id="adm-red-yt" placeholder="URL YouTube">
+            <label>🎨 Color del Tema / Detalles de la Página:</label>
+            <input type="color" id="admin-color-acento" value="#ff3333" style="height:40px; cursor:pointer;">
+
+            <label>🖼️ URL Foto de Fondo (Opcional):</label>
+            <input type="text" id="admin-fondo-url" placeholder="Ej. https://misitio.com/fondo.jpg">
+
+            <label>📂 Categorías de Productos (Separadas por coma):</label>
+            <input type="text" id="admin-categorias-lista" placeholder="Ej. Combos, Ropa, Medias, Barbería, Accesorios">
+
+            <label>📱 Redes Sociales (URLs / Teléfono exacto):</label>
+            <input type="text" id="adm-red-wsp" placeholder="WhatsApp (Ej. 584123167126)">
+            <input type="text" id="adm-red-ig" placeholder="Instagram (URL completa)">
+            <input type="text" id="adm-red-tk" placeholder="TikTok (URL completa)">
+            <input type="text" id="adm-red-fb" placeholder="Facebook (URL completa)">
+            <input type="text" id="adm-red-yt" placeholder="YouTube (URL completa)">
 
             <hr style="border-top:1px dashed #333; margin:12px 0;">
 
@@ -257,26 +282,22 @@
             <input type="number" step="0.01" id="adm-p-precio" placeholder="Precio ($)">
             <input type="number" id="adm-p-stock" placeholder="Stock disponible">
 
-            <select id="adm-p-cat">
-                <option value="ropa">Ropa</option>
-                <option value="combos">🔥 Combos</option>
-                <option value="medias">🧦 Medias</option>
-                <option value="barberia">Barbería</option>
-            </select>
+            <label>Seleccionar Categoría:</label>
+            <select id="adm-p-cat"></select>
 
             <input type="text" id="adm-p-badge" placeholder="Etiqueta Especial (Ej. ¡AHORRA 20%!)">
             <input type="text" id="adm-p-tallas" placeholder="Tallas separadas por coma (S, M, L)">
             <input type="text" id="adm-p-colores" placeholder="Colores separados por coma (Negro, Blanco)">
             
-            <label style="font-size:11px; color:#aaa;">🖼️ URLs de Imágenes (Casillas individuales):</label>
+            <label style="color:#aaa;">🖼️ URLs de Imágenes (Casillas individuales):</label>
             <input type="text" id="adm-p-img1" placeholder="URL Imagen Principal (1)">
-            <input type="text" id="adm-p-img2" placeholder="URL Imagen Secundaria (2) - Opcional">
-            <input type="text" id="adm-p-img3" placeholder="URL Imagen 3 - Opcional">
+            <input type="text" id="adm-p-img2" placeholder="URL Imagen Secundaria (2)">
+            <input type="text" id="adm-p-img3" placeholder="URL Imagen 3">
 
             <button class="btn-admin-act" onclick="window.guardarProductoAdmin()">Guardar Cambios en Catálogo</button>
             <button class="btn-admin-act" style="background:#333; color:#aaa; margin-bottom:12px;" onclick="window.limpiarFormAdmin()">Limpiar Formulario</button>
 
-            <h4 style="color:#ff3333; margin:12px 0 6px 0; font-size:13px;">📦 Tarjetas de Productos Existentes</h4>
+            <h4 style="color:var(--color-acento); margin:12px 0 6px 0; font-size:13px;">📦 Productos Existentes</h4>
             <div id="adminTarjetasProductos"></div>
 
             <button class="btn-admin-act" style="background:#222; color:#fff;" onclick="window.cerrarAdminPanel()">Cerrar Panel</button>
@@ -284,6 +305,10 @@
     </div>
 
     <footer>
+        <!-- ESQUINAS INFERIORES QUE DIBUJAN EL CIERRE DEL DOCUMENTO -->
+        <div class="corner-secret corner-bl"></div>
+        <div class="corner-secret corner-br"></div>
+
         <p id="footerCopy">Todos los derechos reservados.</p>
         <div class="redes-sociales" id="footerRedes"></div>
     </footer>
@@ -292,7 +317,10 @@
         var carrito = [];
         var listaProductosYakuza = [];
         var nombreEmpresa = "Yakuza Fade Co.";
-        var redesEmpresa = { wsp: "584123167126", ig: "#", tk: "#", fb: "#", yt: "#" };
+        var colorAcento = "#ff3333";
+        var fondoUrl = "";
+        var categoriasTienda = ["Combos", "Ropa", "Medias", "Barbería"];
+        var redesEmpresa = { wsp: "584123167126", ig: "", tk: "", fb: "", yt: "" };
         var idProductoEdicion = null;
         var indicesCarrusel = {};
 
@@ -302,17 +330,21 @@
             });
         }
 
-        window.esquinaSecreta = function(num) {};
-
         window.solicitarAccesoAdmin = function() {
             var clave = prompt("🔐 Clave Administrador:");
             if(clave === "612003" || clave === "yakuza") {
                 document.getElementById('admin-empresa-nombre').value = nombreEmpresa;
+                document.getElementById('admin-color-acento').value = colorAcento;
+                document.getElementById('admin-fondo-url').value = fondoUrl;
+                document.getElementById('admin-categorias-lista').value = categoriasTienda.join(', ');
+                
                 document.getElementById('adm-red-wsp').value = redesEmpresa.wsp || "";
                 document.getElementById('adm-red-ig').value = redesEmpresa.ig || "";
                 document.getElementById('adm-red-tk').value = redesEmpresa.tk || "";
                 document.getElementById('adm-red-fb').value = redesEmpresa.fb || "";
                 document.getElementById('adm-red-yt').value = redesEmpresa.yt || "";
+                
+                window.actualizarSelectCategoriasAdmin();
                 window.renderizarTarjetasAdmin();
                 document.getElementById('modalAdminPanel').style.display = 'flex';
             } else if(clave) {
@@ -340,8 +372,22 @@
             document.getElementById('adm-p-img3').value = "";
         };
 
+        window.actualizarSelectCategoriasAdmin = function() {
+            var sel = document.getElementById('adm-p-cat');
+            if(!sel) return;
+            sel.innerHTML = categoriasTienda.map(c => `<option value="${c.toLowerCase().trim()}">${c.trim()}</option>`).join('');
+        };
+
         window.guardarProductoAdmin = function() {
             nombreEmpresa = document.getElementById('admin-empresa-nombre').value.trim() || "Yakuza Fade Co.";
+            colorAcento = document.getElementById('admin-color-acento').value || "#ff3333";
+            fondoUrl = document.getElementById('admin-fondo-url').value.trim();
+
+            var catsInput = document.getElementById('admin-categorias-lista').value.trim();
+            if(catsInput) {
+                categoriasTienda = catsInput.split(',').map(c => c.trim()).filter(c => c.length > 0);
+            }
+
             redesEmpresa = {
                 wsp: document.getElementById('adm-red-wsp').value.trim(),
                 ig: document.getElementById('adm-red-ig').value.trim(),
@@ -388,7 +434,7 @@
             window.renderizarPaginaCompleta();
             window.limpiarFormAdmin();
             window.renderizarTarjetasAdmin();
-            alert("✓ Cambios guardados correctamente.");
+            alert("✓ Cambios guardados en la tienda.");
         };
 
         window.renderizarTarjetasAdmin = function() {
@@ -403,7 +449,7 @@
                             <span style="color:#4cd137; font-size:11px;">$${p.precio.toFixed(2)} | Stock: ${p.stock}</span>
                         </div>
                         <div>
-                            <button style="background:#ff3333; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="window.cargarProductoParaEditar(${p.id})">✏️ Editar</button>
+                            <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="window.cargarProductoParaEditar(${p.id})">✏️ Editar</button>
                             <button style="background:#333; color:#ff3333; border:1px solid #444; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="window.eliminarProductoAdmin(${p.id})">🗑️</button>
                         </div>
                     </div>
@@ -431,7 +477,7 @@
         };
 
         window.eliminarProductoAdmin = function(id) {
-            if(confirm("¿Seguro que deseas eliminar este producto?")) {
+            if(confirm("¿Eliminar este producto?")) {
                 listaProductosYakuza = listaProductosYakuza.filter(x => x.id !== id);
                 if(typeof window.guardarEnNubeYakuza === 'function') window.guardarEnNubeYakuza();
                 window.renderizarPaginaCompleta();
@@ -440,10 +486,22 @@
         };
 
         window.renderizarPaginaCompleta = function() {
+            document.documentElement.style.setProperty('--color-acento', colorAcento);
+            document.body.style.backgroundImage = fondoUrl ? `url('${fondoUrl}')` : 'none';
+
             document.getElementById('brandHeader').innerText = nombreEmpresa;
             document.getElementById('pageTitle').innerText = nombreEmpresa + " - Tienda Oficial";
             document.getElementById('footerCopy').innerText = nombreEmpresa + ". Todos los derechos reservados.";
 
+            /* RENDERIZAR BOTONES DE FILTRO CATEGORÍAS */
+            var filtrosContainer = document.getElementById('contenedorFiltrosCat');
+            var btnFiltrosHtml = `<button class="btn-filtro activo" onclick="window.filtrarCategoria('todos', event)">Todos</button>`;
+            categoriasTienda.forEach(c => {
+                btnFiltrosHtml += `<button class="btn-filtro" onclick="window.filtrarCategoria('${c.toLowerCase().trim()}', event)">${c.trim()}</button>`;
+            });
+            filtrosContainer.innerHTML = btnFiltrosHtml;
+
+            /* REDES SOCIALES FOOTER */
             var redHtml = "";
             if(redesEmpresa.wsp) redHtml += `<a href="https://wa.me/${redesEmpresa.wsp}" target="_blank">💬 WhatsApp</a>`;
             if(redesEmpresa.ig) redHtml += `<a href="${redesEmpresa.ig}" target="_blank">📸 Instagram</a>`;
@@ -461,7 +519,7 @@
             var html = "";
 
             if(listaProductosYakuza.length === 0) {
-                container.innerHTML = '<div style="color:#aaa; font-size:13px; grid-column:1/-1;">No hay productos disponibles. Toca el punto rojo superior derecho para agregar.</div>';
+                container.innerHTML = '<div style="color:#aaa; font-size:13px; grid-column:1/-1;">No hay productos disponibles en el catálogo.</div>';
                 return;
             }
 
@@ -473,7 +531,7 @@
                 var coloresOpt = p.colores.map(c => '<a href="#" onclick="window.seleccionarOpcion(event, this, \'' + c + '\')">' + c + '</a>').join('');
 
                 html += `
-                    <div class="producto" data-categoria="${p.categoria}" data-nombre="${p.nombre.toLowerCase()}">
+                    <div class="producto" data-categoria="${p.categoria.toLowerCase().trim()}" data-nombre="${p.nombre.toLowerCase()}">
                         ${badgeHtml}
                         <div class="carrusel-container" id="carrusel-box-${p.id}">
                             <div class="carrusel-slides" id="slides-${p.id}">
@@ -525,7 +583,6 @@
             document.getElementById('modalZoom').style.display = 'flex';
         };
 
-        /* ACTIVAR DESLIZAMIENTO TÁCTIL CON EL DEDO (SWIPE) */
         window.activarSwipeCarruseles = function() {
             listaProductosYakuza.forEach(p => {
                 var box = document.getElementById(`carrusel-box-${p.id}`);
@@ -591,7 +648,7 @@
             window.actualizarBarraCarrito();
             btn.innerText = "¡Agregado! ✓";
             btn.style.background = "#4cd137";
-            setTimeout(() => { btn.innerText = "🛒 Añadir al Carrito"; btn.style.background = "#ff3333"; }, 1000);
+            setTimeout(() => { btn.innerText = "🛒 Añadir al Carrito"; btn.style.background = "var(--color-acento)"; }, 1000);
         };
 
         window.actualizarBarraCarrito = function() {
@@ -615,7 +672,7 @@
                             <small style="color:#aaa;">${i.variacion} | Cant: ${i.cantidad}</small><br>
                             <span style="color:#4cd137; font-weight:bold;">$${(i.precio*i.cantidad).toFixed(2)}</span>
                         </div>
-                        <button style="background:#ff3333; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="window.eliminarDelCarrito(${idx})">✕</button>
+                        <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="window.eliminarDelCarrito(${idx})">✕</button>
                     </div>
                 `;
             });
