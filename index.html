@@ -41,7 +41,6 @@
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ESQUINAS SECRETAS DE ADMIN */
         .corner-secret {
             position: absolute;
             width: 12px;
@@ -51,11 +50,10 @@
             cursor: pointer;
         }
         .corner-tl { top: 0; left: 0; }
-        .corner-tr { top: 0; right: 0; } /* ACTIVA ADMIN */
+        .corner-tr { top: 0; right: 0; }
         .corner-bl { bottom: 0; left: 0; }
         .corner-br { bottom: 0; right: 0; }
 
-        /* BANNER DE ENCABEZADO SUPERIOR (HEADER LOGO/IMAGEN) */
         .header-brand-banner {
             width: 100%;
             max-height: 220px;
@@ -70,9 +68,7 @@
             display: block;
         }
 
-        .header-text-container {
-            padding: 15px 15px 5px 15px;
-        }
+        .header-text-container { padding: 15px 15px 5px 15px; }
 
         h1 {
             animation: fadeInDown 1s ease-in-out;
@@ -102,7 +98,6 @@
             margin-bottom: 15px;
         }
 
-        /* BANNERS PUBLICITARIOS CARRUSEL (SUPERIOR E INFERIOR) */
         .banner-promo-container {
             position: relative;
             max-width: 700px;
@@ -152,9 +147,7 @@
             border-radius: 4px;
         }
 
-        .main-wrapper {
-            padding: 0 15px;
-        }
+        .main-wrapper { padding: 0 15px; }
 
         .buscador-container { margin-bottom: 15px; animation: fadeInDown 1.3s ease-in-out; }
         .buscador-container input {
@@ -216,61 +209,32 @@
 
         .btn-agregar-carrito { background-color: var(--color-acento); color: white; border: none; width: 100%; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; transition: 0.2s; }
         .btn-agregar-carrito:hover { filter: brightness(0.9); }
+        .btn-agregar-carrito:disabled { background-color: #444 !important; color: #888; cursor: not-allowed; }
 
-        /* PANEL ADMIN ESTRUCTURADO */
+        /* PANEL ADMIN */
         .admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 3000; justify-content: center; align-items: center; }
         .admin-box { background: #141414; border: 1px solid var(--color-acento); padding: 20px; border-radius: 12px; width: 92%; max-width: 520px; max-height: 85vh; overflow-y: auto; text-align: left; }
         .admin-box h2 { color: var(--color-acento); margin-top: 0; font-size: 18px; text-align: center; border-bottom: 1px dashed #333; padding-bottom: 8px; }
         
-        .admin-section {
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 14px;
-        }
-        .admin-section h3 {
-            margin: 0 0 10px 0;
-            font-size: 13px;
-            color: var(--color-acento);
-            border-bottom: 1px solid #333;
-            padding-bottom: 4px;
-        }
+        .admin-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px; margin-bottom: 14px; }
+        .admin-section h3 { margin: 0 0 10px 0; font-size: 13px; color: var(--color-acento); border-bottom: 1px solid #333; padding-bottom: 4px; }
 
         .admin-box label { font-size: 11px; color: #ccc; font-weight: bold; margin-top: 8px; display: block; }
         .admin-box input, .admin-box select { width: 100%; background: #0b0b0b; border: 1px solid #333; padding: 8px; border-radius: 6px; color: #fff; margin-top: 3px; margin-bottom: 8px; box-sizing: border-box; font-size: 12px; }
         .btn-admin-act { background: var(--color-acento); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 6px; transition: 0.2s; }
         
-        .cat-chip {
-            display: inline-flex;
-            align-items: center;
-            background: #282828;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            margin: 3px;
-            border: 1px solid #444;
-        }
-        .cat-chip span {
-            margin-left: 6px;
-            color: var(--color-acento);
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .cat-chip { display: inline-flex; align-items: center; background: #282828; color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 11px; margin: 3px; border: 1px solid #444; }
+        .cat-chip span { margin-left: 6px; color: var(--color-acento); font-weight: bold; cursor: pointer; }
 
         .admin-card-item { background: #1e1e1e; border: 1px solid #333; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* CARRITO FLOTANTE Y MODALES */
         .carrito-flotante { position: fixed; bottom: 0; left: 0; width: 100%; background: #141414; border-top: 2px solid var(--color-acento); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-sizing: border-box; }
         .modal-carrito { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
         .modal-contenido { background: #141414; padding: 22px; border-radius: 14px; width: 90%; max-width: 420px; max-height: 85vh; overflow-y: auto; border: 1px solid #333; text-align: left; }
 
-        /* MODAL ZOOM CON DESLIZAMIENTO TÁCTIL */
         .modal-zoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; touch-action: pan-y; }
         .modal-zoom img { max-width: 92%; max-height: 85vh; border-radius: 8px; border: 2px solid var(--color-acento); user-select: none; }
 
-        /* FOOTER */
         footer { margin-top: 30px; padding: 20px 10px; border-top: 1px solid #1a1a1a; position: relative; }
         .redes-sociales { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .redes-sociales a { background: #161616; color: #ccc; padding: 7px 14px; border-radius: 6px; text-decoration: none; font-size: 11px; border: 1px solid #282828; transition: 0.3s; }
@@ -311,6 +275,21 @@
             } catch(e) { console.warn("Guardado offline."); }
         };
 
+        // FUNCIÓN QUE RESTA EL STOCK DIRECTO EN FIREBASE AL COMPLETAR PEDIDO
+        window.descontarStockEnNube = async function() {
+            try {
+                window.carrito.forEach(item => {
+                    let prod = window.listaProductosYakuza.find(p => p.id === item.id);
+                    if(prod) {
+                        prod.stock = Math.max(0, prod.stock - item.cantidad);
+                    }
+                });
+                await window.guardarEnNubeYakuza();
+            } catch(e) {
+                console.error("Error al descontar stock:", e);
+            }
+        };
+
         onSnapshot(doc(db, "yakuza_store", "catalogo_productos"), (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
@@ -332,11 +311,9 @@
 </head>
 <body>
 
-    <!-- 4 ESQUINAS SECRETAS -->
     <div class="corner-secret corner-tl"></div>
-    <div class="corner-secret corner-tr" onclick="window.solicitarAccesoAdmin()"></div> <!-- ACTIVA -->
+    <div class="corner-secret corner-tr" onclick="window.solicitarAccesoAdmin()"></div>
 
-    <!-- BANNER OFICIAL DE LA MARCA (O ENCABEZADO DE TEXTO) -->
     <div id="headerBrandWrapper">
         <div class="header-brand-banner" id="headerBannerBox" style="display:none;">
             <img id="imgHeaderBannerTarget" src="" alt="Yakuza Fade Co. Banner">
@@ -349,10 +326,7 @@
 
     <div class="tasa-bcv-tag" id="tasaDisplayTag">💵 Tasa BCV: Cargando...</div>
 
-    <!-- MAIN WRAPPER PARA TIENDA Y PUBLICIDAD -->
     <div class="main-wrapper">
-
-        <!-- CARRUSEL PUBLICITARIO SUPERIOR (HASTA 4 IMÁGENES) -->
         <div class="banner-promo-container" id="bannerTopWrapper" style="display: none;">
             <div class="banner-promo-slides" id="bannerTopSlides"></div>
             <div class="banner-dots" id="bannerTopDots"></div>
@@ -366,15 +340,12 @@
 
         <div class="contenedor-tienda" id="listaProductosContainer"></div>
 
-        <!-- CARRUSEL PUBLICITARIO INFERIOR (HASTA 4 IMÁGENES) -->
         <div class="banner-promo-container" id="bannerBottomWrapper" style="display: none; margin-top: 10px;">
             <div class="banner-promo-slides" id="bannerBottomSlides"></div>
             <div class="banner-dots" id="bannerBottomDots"></div>
         </div>
-
     </div>
 
-    <!-- BARRA FLOTANTE CARRITO -->
     <div class="carrito-flotante" id="barraCarrito" style="display: none;">
         <div style="font-size:12px; font-weight:bold; color:#ddd; text-align:left;">
             🛒 <span id="contadorCarritoTotal">0</span> prod.<br>
@@ -384,7 +355,6 @@
         <button style="background:var(--color-acento); color:#fff; border:none; padding:8px 16px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="window.abrirModalCarrito()">Ver Pedido</button>
     </div>
 
-    <!-- MODAL RESUMEN COMPRA -->
     <div class="modal-carrito" id="modalCarrito">
         <div class="modal-contenido">
             <h2 style="color:var(--color-acento); text-align:center;">🧾 Resumen de Pedido</h2>
@@ -403,17 +373,14 @@
         </div>
     </div>
 
-    <!-- MODAL ZOOM CON NAVEGACIÓN Y SWIPE -->
     <div class="modal-zoom" id="modalZoom" onclick="window.cerrarZoomModal(event)">
         <img id="imgZoomTarget" src="" alt="Zoom Producto">
     </div>
 
-    <!-- PANEL ADMIN ESTRUCTURADO Y ORDENADO POR SECCIONES -->
     <div class="admin-panel-overlay" id="modalAdminPanel">
         <div class="admin-box">
             <h2>⚙️ Panel Admin - Configuración</h2>
             
-            <!-- SECCIÓN 1: MARCA Y BANNERS -->
             <div class="admin-section">
                 <h3>🎨 Marca & Encabezado</h3>
                 <label>🏷️ Nombre de la Empresa:</label>
@@ -422,39 +389,36 @@
                 <label>📝 Subtítulo de la Página:</label>
                 <input type="text" id="admin-empresa-subtitulo" placeholder="Ej. Barbería, Ropa Oficial & Combos Urbanos">
 
-                <label>🖼️ URL Banner Principal del Nombre (Medida recomendada: 1200x300 px):</label>
-                <input type="text" id="admin-header-banner-url" placeholder="Ej. https://misitio.com/banner-yakuza.jpg">
+                <label>🖼️ URL Banner Principal del Nombre:</label>
+                <input type="text" id="admin-header-banner-url" placeholder="Ej. https://misitio.com/banner.jpg">
             </div>
 
-            <!-- SECCIÓN 2: PUBLICIDAD (CARRUSELES TOP & BOTTOM) -->
             <div class="admin-section">
-                <h3>📢 Carrusel Publicitario Superior (Hasta 4 fotos)</h3>
+                <h3>📢 Carrusel Publicitario Superior</h3>
                 <input type="text" id="adm-top-b1" placeholder="URL Imagen Top 1">
                 <input type="text" id="adm-top-b2" placeholder="URL Imagen Top 2">
                 <input type="text" id="adm-top-b3" placeholder="URL Imagen Top 3">
                 <input type="text" id="adm-top-b4" placeholder="URL Imagen Top 4">
 
-                <h3 style="margin-top:12px;">📢 Carrusel Publicitario Inferior (Hasta 4 fotos)</h3>
+                <h3 style="margin-top:12px;">📢 Carrusel Publicitario Inferior</h3>
                 <input type="text" id="adm-bot-b1" placeholder="URL Imagen Bottom 1">
                 <input type="text" id="adm-bot-b2" placeholder="URL Imagen Bottom 2">
                 <input type="text" id="adm-bot-b3" placeholder="URL Imagen Bottom 3">
                 <input type="text" id="adm-bot-b4" placeholder="URL Imagen Bottom 4">
             </div>
 
-            <!-- SECCIÓN 3: TASA Y APARIENCIA -->
             <div class="admin-section">
                 <h3>💵 Tasa & Diseño</h3>
-                <label>💵 Tasa Dólar Manual (Opcional - Deja en 0 para BCV Automático):</label>
-                <input type="number" step="0.01" id="admin-tasa-manual" placeholder="Ej. 36.50 (0 = Automático BCV)">
+                <label>💵 Tasa Dólar Manual:</label>
+                <input type="number" step="0.01" id="admin-tasa-manual" placeholder="Ej. 36.50 (0 = BCV)">
 
                 <label>🎨 Color del Tema:</label>
                 <input type="color" id="admin-color-acento" value="#ff3333" style="height:36px; cursor:pointer;">
 
-                <label>🖼️ URL Foto de Fondo (Opcional):</label>
-                <input type="text" id="admin-fondo-url" placeholder="Ej. https://misitio.com/fondo.jpg">
+                <label>🖼️ URL Foto de Fondo:</label>
+                <input type="text" id="admin-fondo-url" placeholder="URL Fondo">
             </div>
 
-            <!-- SECCIÓN 4: GESTOR DE CATEGORÍAS FÁCIL -->
             <div class="admin-section">
                 <h3>📂 Categorías de Productos</h3>
                 <div style="display:flex; gap:6px;">
@@ -464,19 +428,17 @@
                 <div id="admChipsCategorias" style="margin-top:8px;"></div>
             </div>
 
-            <!-- SECCIÓN 5: REDES SOCIALES -->
             <div class="admin-section">
                 <h3>📱 Redes Sociales</h3>
-                <input type="text" id="adm-red-wsp" placeholder="WhatsApp (Ej. 584123167126)">
-                <input type="text" id="adm-red-ig" placeholder="Instagram (URL)">
-                <input type="text" id="adm-red-tk" placeholder="TikTok (URL)">
-                <input type="text" id="adm-red-fb" placeholder="Facebook (URL)">
-                <input type="text" id="adm-red-yt" placeholder="YouTube (URL)">
+                <input type="text" id="adm-red-wsp" placeholder="WhatsApp">
+                <input type="text" id="adm-red-ig" placeholder="Instagram">
+                <input type="text" id="adm-red-tk" placeholder="TikTok">
+                <input type="text" id="adm-red-fb" placeholder="Facebook">
+                <input type="text" id="adm-red-yt" placeholder="YouTube">
             </div>
 
             <hr style="border-top:1px dashed #333; margin:15px 0;">
 
-            <!-- SECCIÓN 6: FORMULARIO DE PRODUCTOS -->
             <div class="admin-section">
                 <h3 id="titulo-form-admin" style="color:#fff;">📦 Agregar / Editar Producto</h3>
                 
@@ -488,23 +450,23 @@
                 <label>Categoría:</label>
                 <select id="adm-p-cat"></select>
 
-                <input type="text" id="adm-p-badge" placeholder="Etiqueta Especial (Ej. ¡NUEVO!)">
-                <input type="text" id="adm-p-tallas" placeholder="Tallas separadas por coma (S, M, L / Única)">
+                <input type="text" id="adm-p-badge" placeholder="Etiqueta Especial">
+                <input type="text" id="adm-p-tallas" placeholder="Tallas por coma (S, M, L)">
 
                 <label>Tipo de Segunda Opción:</label>
                 <select id="adm-p-tipo-opcion" onchange="window.cambiarTipoOpcionInput(this.value)">
-                    <option value="color">🎨 Color (Ej. Negro, Azul, Rojo)</option>
-                    <option value="material">✨ Material (Ej. Oro, Plata, Bronce)</option>
-                    <option value="ninguna">❌ Ninguna (Sin segunda opción)</option>
+                    <option value="color">🎨 Color</option>
+                    <option value="material">✨ Material</option>
+                    <option value="ninguna">❌ Ninguna</option>
                 </select>
 
                 <div id="boxSegundaOpcionValores">
-                    <input type="text" id="adm-p-opcion-valores" placeholder="Opciones separadas por coma (Ej. Oro, Plata)">
+                    <input type="text" id="adm-p-opcion-valores" placeholder="Opciones por coma">
                 </div>
                 
-                <label style="color:#aaa;">🖼️ Imágenes del Producto (Hasta 5 casillas):</label>
-                <input type="text" id="adm-p-img1" placeholder="URL Imagen 1 (Corresponde a Opción 1)">
-                <input type="text" id="adm-p-img2" placeholder="URL Imagen 2 (Corresponde a Opción 2)">
+                <label style="color:#aaa;">🖼️ Imágenes del Producto:</label>
+                <input type="text" id="adm-p-img1" placeholder="URL Imagen 1">
+                <input type="text" id="adm-p-img2" placeholder="URL Imagen 2">
                 <input type="text" id="adm-p-img3" placeholder="URL Imagen 3">
                 <input type="text" id="adm-p-img4" placeholder="URL Imagen 4">
                 <input type="text" id="adm-p-img5" placeholder="URL Imagen 5">
@@ -564,7 +526,6 @@
         window.formatearPrecioBS = function(montoUSD) {
             var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
             if(!tasa || isNaN(tasa) || tasa <= 0) tasa = 36.50;
-            
             var totalBs = (parseFloat(montoUSD) || 0) * tasa;
             return totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
         };
@@ -577,23 +538,16 @@
             }
 
             var tasaObtenida = null;
-
             try {
                 let resp = await fetch('https://ve.dolarapi.com/v1/dolares/oficial');
                 let data = await resp.json();
-                if(data && data.promedio) {
-                    tasaObtenida = parseFloat(data.promedio);
-                }
+                if(data && data.promedio) tasaObtenida = parseFloat(data.promedio);
             } catch(e) {
                 try {
                     let resp2 = await fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv');
                     let data2 = await resp2.json();
-                    if(data2 && data2.moneda && data2.moneda.price) {
-                        tasaObtenida = parseFloat(data2.moneda.price);
-                    }
-                } catch(err) {
-                    console.warn("Falla en la consulta API.");
-                }
+                    if(data2 && data2.moneda && data2.moneda.price) tasaObtenida = parseFloat(data2.moneda.price);
+                } catch(err) { console.warn("Falla API"); }
             }
 
             if(tasaObtenida && !isNaN(tasaObtenida) && tasaObtenida > 0) {
@@ -861,7 +815,6 @@
             document.documentElement.style.setProperty('--color-acento', colorAcento);
             document.body.style.backgroundImage = fondoUrl ? `url('${fondoUrl}')` : 'none';
 
-            // ENCABEZADO CON BANNER DE MARCA O TEXTO
             var bannerBox = document.getElementById('headerBannerBox');
             var textBox = document.getElementById('headerTextBox');
             
@@ -900,7 +853,6 @@
             window.renderizarProductosTienda();
         };
 
-        // RENDERIZADO DE CARRUSELES PUBLICITARIOS
         window.renderizarCarruselGenerico = function(wrapId, slidesId, dotsId, listaImgs, tipo) {
             var wrap = document.getElementById(wrapId);
             var slidesBox = document.getElementById(slidesId);
@@ -985,6 +937,10 @@
                     `;
                 }
 
+                var estaAgotado = p.stock < 1;
+                var btnTexto = estaAgotado ? "❌ AGOTADO" : "🛒 Añadir al Carrito";
+                var btnDisabled = estaAgotado ? "disabled" : "";
+
                 html += `
                     <div class="producto" data-categoria="${p.categoria.toLowerCase().trim()}" data-nombre="${p.nombre.toLowerCase()}">
                         ${badgeHtml}
@@ -996,8 +952,8 @@
                             <button class="carrusel-btn next" onclick="window.moverCarrusel('slides-${p.id}', 1)">❯</button>
                         </div>
                         
-                        <div class="stock-indicator ${p.stock < 1 ? 'agotado' : ''}">
-                            📦 Stock: <span>${p.stock} unids.</span>
+                        <div class="stock-indicator ${estaAgotado ? 'agotado' : ''}">
+                            📦 Stock: <span>${estaAgotado ? 'Agotado' : p.stock + ' unids.'}</span>
                         </div>
 
                         <h3>${p.nombre}</h3>
@@ -1021,7 +977,7 @@
                             </div>
                         </div>
 
-                        <button type="button" class="btn-agregar-carrito" onclick="window.agregarAlCarrito(event, this, ${p.id})">🛒 Añadir al Carrito</button>
+                        <button type="button" class="btn-agregar-carrito" ${btnDisabled} onclick="window.agregarAlCarrito(event, this, ${p.id})">${btnTexto}</button>
                     </div>
                 `;
             });
@@ -1137,8 +1093,13 @@
 
             var tarjeta = btn.closest('.producto');
             var cant = parseInt(tarjeta.querySelector('.contador-val').innerText);
+
+            if(cant > prodObj.stock) {
+                alert(`⚠️ Solo quedan ${prodObj.stock} unidades disponibles.`);
+                return;
+            }
+
             var talla = tarjeta.querySelector('.talla-elegida') ? tarjeta.querySelector('.talla-elegida').innerText : "Única";
-            
             var opcSpan = tarjeta.querySelector('.color-elegido');
             var opcVal = opcSpan ? opcSpan.innerText : null;
 
@@ -1147,8 +1108,15 @@
 
             var existente = carrito.find(i => i.id === idProd && i.variacion === varStr);
 
-            if(existente) existente.cantidad += cant;
-            else carrito.push({ id: idProd, nombre: prodObj.nombre, precio: prodObj.precio, cantidad: cant, variacion: varStr });
+            if(existente) {
+                if(existente.cantidad + cant > prodObj.stock) {
+                    alert(`⚠️ No puedes agregar más. El stock máximo disponible es ${prodObj.stock}.`);
+                    return;
+                }
+                existente.cantidad += cant;
+            } else {
+                carrito.push({ id: idProd, nombre: prodObj.nombre, precio: prodObj.precio, cantidad: cant, variacion: varStr });
+            }
 
             window.actualizarBarraCarrito();
             btn.innerText = "¡Agregado! ✓";
@@ -1206,8 +1174,10 @@
             window.abrirModalCarrito();
         };
 
-        window.enviarPedidoWhatsApp = function(metodo) {
+        // ENVIAR PEDIDO Y DESCONTAR STOCK AUTOMÁTICAMENTE
+        window.enviarPedidoWhatsApp = async function(metodo) {
             if(carrito.length === 0) return;
+            
             var tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
             if(!tasa || isNaN(tasa) || tasa <= 0) tasa = 36.50;
 
@@ -1223,8 +1193,18 @@
 
             var totalBS = totalUSD * tasa;
             msj += `💵 *TOTAL EN USD:* ${window.formatearPrecioUSD(totalUSD)}\n`;
-            msj += `0️⃣ *TOTAL EN BS.:* ${totalBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs. (Tasa: ${tasa.toFixed(2)} Bs./$)\n`;
+            msj += `🇻🇪 *TOTAL EN BS.:* ${totalBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs. (Tasa: ${tasa.toFixed(2)} Bs./$)\n`;
             msj += `💳 *Método de pago:* ${metodo}`;
+
+            // RESTA EL STOCK EN LA BASE DE DATOS
+            if(typeof window.descontarStockEnNube === 'function') {
+                await window.descontarStockEnNube();
+            }
+
+            // LIMPIA EL CARRITO Y REDIRIGE A WHATSAPP
+            carrito = [];
+            window.actualizarBarraCarrito();
+            document.getElementById('modalCarrito').style.display = 'none';
 
             var url = `https://wa.me/${redesEmpresa.wsp}?text=${encodeURIComponent(msj)}`;
             window.open(url, '_blank');
