@@ -211,6 +211,44 @@
         .btn-agregar-carrito:hover { filter: brightness(0.9); }
         .btn-agregar-carrito:disabled { background-color: #444 !important; color: #888; cursor: not-allowed; }
 
+        /* CARRITO FLOTANTE EN FORMA DE BOLITA ARRASTRABLE */
+        .carrito-bolita {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 58px;
+            height: 58px;
+            background: var(--color-acento);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 6px 20px rgba(255, 51, 51, 0.6);
+            z-index: 2500;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            border: 2px solid #ffffff;
+            transition: transform 0.1s;
+        }
+        .carrito-bolita:active { cursor: grabbing; transform: scale(0.95); }
+        .carrito-bolita-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ffffff;
+            color: #000000;
+            font-size: 11px;
+            font-weight: 900;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--color-acento);
+        }
+
         /* PANEL ADMIN */
         .admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 3000; justify-content: center; align-items: center; }
         .admin-box { background: #141414; border: 1px solid var(--color-acento); padding: 20px; border-radius: 12px; width: 92%; max-width: 520px; max-height: 85vh; overflow-y: auto; text-align: left; }
@@ -228,8 +266,7 @@
 
         .admin-card-item { background: #1e1e1e; border: 1px solid #333; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        .carrito-flotante { position: fixed; bottom: 0; left: 0; width: 100%; background: #141414; border-top: 2px solid var(--color-acento); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-sizing: border-box; }
-        .modal-carrito { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-carrito { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3500; justify-content: center; align-items: center; }
         .modal-contenido { background: #141414; padding: 22px; border-radius: 14px; width: 90%; max-width: 420px; max-height: 85vh; overflow-y: auto; border: 1px solid #333; text-align: left; }
 
         .modal-zoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; touch-action: pan-y; }
@@ -266,6 +303,7 @@
                     colorAcento: window.colorAcento || "#ff3333",
                     fondoUrl: window.fondoUrl || "",
                     tasaManualBs: window.tasaManualBs || 0,
+                    metodosPago: window.metodosPago || { pm: true, binance: true, paypal: true, trans: true, efectivo: true, otro: "" },
                     bannersTop: window.bannersTop || [],
                     bannersBottom: window.bannersBottom || [],
                     categorias: window.categoriasTienda || ["Combos", "Ropa", "Medias", "Barbería"],
@@ -275,7 +313,6 @@
             } catch(e) { console.warn("Guardado offline."); }
         };
 
-        // FUNCIÓN QUE RESTA EL STOCK DIRECTO EN FIREBASE AL COMPLETAR PEDIDO
         window.descontarStockEnNube = async function() {
             try {
                 window.carrito.forEach(item => {
@@ -299,6 +336,7 @@
                 if (data.colorAcento) window.colorAcento = data.colorAcento;
                 if (data.fondoUrl !== undefined) window.fondoUrl = data.fondoUrl;
                 if (data.tasaManualBs !== undefined) window.tasaManualBs = parseFloat(data.tasaManualBs) || 0;
+                if (data.metodosPago) window.metodosPago = data.metodosPago;
                 if (data.bannersTop) window.bannersTop = data.bannersTop;
                 if (data.bannersBottom) window.bannersBottom = data.bannersBottom;
                 if (data.categorias) window.categoriasTienda = data.categorias;
@@ -346,15 +384,13 @@
         </div>
     </div>
 
-    <div class="carrito-flotante" id="barraCarrito" style="display: none;">
-        <div style="font-size:12px; font-weight:bold; color:#ddd; text-align:left;">
-            🛒 <span id="contadorCarritoTotal">0</span> prod.<br>
-            <span id="montoTotalCarritoUSD" style="color: #fff; font-size:14px;">$0</span> | 
-            <span id="montoTotalCarritoBS" style="color: #4cd137; font-size:13px;">0 Bs.</span>
-        </div>
-        <button style="background:var(--color-acento); color:#fff; border:none; padding:8px 16px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="window.abrirModalCarrito()">Ver Pedido</button>
+    <!-- BOLITA FLOTANTE Y ARRASTRABLE DEL CARRITO -->
+    <div class="carrito-bolita" id="bolitaCarrito" style="display: none;">
+        <span style="font-size: 24px;">🛒</span>
+        <div class="carrito-bolita-badge" id="badgeBolitaTotal">0</div>
     </div>
 
+    <!-- MODAL RESUMEN COMPRA -->
     <div class="modal-carrito" id="modalCarrito">
         <div class="modal-contenido">
             <h2 style="color:var(--color-acento); text-align:center;">🧾 Resumen de Pedido</h2>
@@ -366,8 +402,7 @@
             </div>
             
             <div style="font-size:11px; color:#aaa; margin-bottom:6px;">SELECCIONA MÉTODO DE PAGO:</div>
-            <button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Pago Móvil (Bolívares)')">📱 Pagar con Pago Móvil (Bs.)</button>
-            <button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Binance P2P / USDT')">🪙 Pagar con Binance / USDT</button>
+            <div id="contenedorMetodosPagoModal"></div>
 
             <button style="background:#222; color:#aaa; border:1px solid #444; padding:8px; border-radius:8px; width:100%; margin-top:10px; cursor:pointer;" onclick="document.getElementById('modalCarrito').style.display='none'">Seguir Comprando</button>
         </div>
@@ -391,6 +426,18 @@
 
                 <label>🖼️ URL Banner Principal del Nombre:</label>
                 <input type="text" id="admin-header-banner-url" placeholder="Ej. https://misitio.com/banner.jpg">
+            </div>
+
+            <!-- SECCIÓN DE MÉTODOS DE PAGO PERMITIDOS -->
+            <div class="admin-section">
+                <h3>💳 Métodos de Pago Activos</h3>
+                <label><input type="checkbox" id="adm-pago-pm" checked> 📱 Pago Móvil (Bolívares)</label>
+                <label><input type="checkbox" id="adm-pago-binance" checked> 🪙 Binance P2P / USDT</label>
+                <label><input type="checkbox" id="adm-pago-paypal" checked> 🅿️ PayPal / Zelle ($)</label>
+                <label><input type="checkbox" id="adm-pago-trans" checked> 🏛️ Transferencia Bancaria</label>
+                <label><input type="checkbox" id="adm-pago-efectivo" checked> 💵 Efectivo (Bolívares / Dólares)</label>
+                <label>➕ Otro Método Adicional (Opcional):</label>
+                <input type="text" id="adm-pago-otro" placeholder="Ej. Zinli / Wally / Banesco Panamá">
             </div>
 
             <div class="admin-section">
@@ -503,6 +550,8 @@
         var tasaManualBs = 0;
         var tasaBCVActual = parseFloat(localStorage.getItem('bcv_tasa_cache')) || 36.50;
         
+        var metodosPago = { pm: true, binance: true, paypal: true, trans: true, efectivo: true, otro: "" };
+
         var bannersTop = [];
         var bannersBottom = [];
         var timerBannerTop = null;
@@ -567,6 +616,67 @@
             });
         }
 
+        // LÓGICA DE DRAG & DROP (ARRASTRAR BOLITA EN PANTALLA)
+        (function setupBolitaCarritoArrastrable() {
+            var el = document.getElementById('bolitaCarrito');
+            var isDragging = false;
+            var startX, startY, initialX, initialY;
+            var hasMoved = false;
+
+            function dragStart(e) {
+                isDragging = true;
+                hasMoved = false;
+                var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = clientX;
+                startY = clientY;
+
+                var rect = el.getBoundingClientRect();
+                initialX = rect.left;
+                initialY = rect.top;
+            }
+
+            function dragMove(e) {
+                if (!isDragging) return;
+                var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                
+                var dx = clientX - startX;
+                var dy = clientY - startY;
+
+                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                    hasMoved = true;
+                }
+
+                var newX = initialX + dx;
+                var newY = initialY + dy;
+
+                newX = Math.max(10, Math.min(window.innerWidth - 70, newX));
+                newY = Math.max(10, Math.min(window.innerHeight - 70, newY));
+
+                el.style.left = newX + 'px';
+                el.style.top = newY + 'px';
+                el.style.right = 'auto';
+                el.style.bottom = 'auto';
+            }
+
+            function dragEnd(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                if (!hasMoved) {
+                    window.abrirModalCarrito();
+                }
+            }
+
+            el.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', dragMove);
+            document.addEventListener('mouseup', dragEnd);
+
+            el.addEventListener('touchstart', dragStart, {passive: true});
+            document.addEventListener('touchmove', dragMove, {passive: true});
+            document.addEventListener('touchend', dragEnd);
+        })();
+
         window.solicitarAccesoAdmin = function() {
             var clave = prompt("🔐 Clave Administrador:");
             if(clave === "612003" || clave === "yakuza") {
@@ -577,6 +687,13 @@
                 document.getElementById('admin-color-acento').value = colorAcento;
                 document.getElementById('admin-fondo-url').value = fondoUrl;
                 
+                document.getElementById('adm-pago-pm').checked = metodosPago.pm !== false;
+                document.getElementById('adm-pago-binance').checked = metodosPago.binance !== false;
+                document.getElementById('adm-pago-paypal').checked = metodosPago.paypal !== false;
+                document.getElementById('adm-pago-trans').checked = metodosPago.trans !== false;
+                document.getElementById('adm-pago-efectivo').checked = metodosPago.efectivo !== false;
+                document.getElementById('adm-pago-otro').value = metodosPago.otro || "";
+
                 document.getElementById('adm-top-b1').value = bannersTop[0] || "";
                 document.getElementById('adm-top-b2').value = bannersTop[1] || "";
                 document.getElementById('adm-top-b3').value = bannersTop[2] || "";
@@ -676,6 +793,15 @@
             tasaManualBs = parseFloat(document.getElementById('admin-tasa-manual').value) || 0;
             colorAcento = document.getElementById('admin-color-acento').value || "#ff3333";
             fondoUrl = document.getElementById('admin-fondo-url').value.trim();
+
+            metodosPago = {
+                pm: document.getElementById('adm-pago-pm').checked,
+                binance: document.getElementById('adm-pago-binance').checked,
+                paypal: document.getElementById('adm-pago-paypal').checked,
+                trans: document.getElementById('adm-pago-trans').checked,
+                efectivo: document.getElementById('adm-pago-efectivo').checked,
+                otro: document.getElementById('adm-pago-otro').value.trim()
+            };
 
             bannersTop = [
                 document.getElementById('adm-top-b1').value.trim(),
@@ -1133,14 +1259,11 @@
 
             var totalMontoBS = totalMontoUSD * tasa;
 
-            document.getElementById('contadorCarritoTotal').innerText = totalItems;
-            document.getElementById('montoTotalCarritoUSD').innerText = window.formatearPrecioUSD(totalMontoUSD);
-            document.getElementById('montoTotalCarritoBS').innerText = totalMontoBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
-            
+            document.getElementById('badgeBolitaTotal').innerText = totalItems;
             document.getElementById('modalMontoTotalUSD').innerText = window.formatearPrecioUSD(totalMontoUSD);
             document.getElementById('modalMontoTotalBS').innerText = totalMontoBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
             
-            document.getElementById('barraCarrito').style.display = totalItems > 0 ? 'flex' : 'none';
+            document.getElementById('bolitaCarrito').style.display = totalItems > 0 ? 'flex' : 'none';
         };
 
         window.abrirModalCarrito = function() {
@@ -1165,6 +1288,19 @@
                 `;
             });
             cont.innerHTML = html || '<p style="color:#aaa; text-align:center;">Carrito vacío.</p>';
+
+            // DIBUJAR BOTONES DE MÉTODOS DE PAGO ACTIVOS
+            var btnPagoContainer = document.getElementById('contenedorMetodosPagoModal');
+            var btnHtml = "";
+            if(metodosPago.pm !== false) btnHtml += `<button style="background:#25d366; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Pago Móvil (Bolívares)')">📱 Pagar con Pago Móvil (Bs.)</button>`;
+            if(metodosPago.binance !== false) btnHtml += `<button style="background:#f3ba2f; color:#000; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Binance P2P / USDT')">🪙 Pagar con Binance / USDT</button>`;
+            if(metodosPago.paypal !== false) btnHtml += `<button style="background:#0079C1; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('PayPal / Zelle ($)')">🅿️ Pagar con PayPal / Zelle ($)</button>`;
+            if(metodosPago.trans !== false) btnHtml += `<button style="background:#4b6584; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Transferencia Bancaria')">🏛️ Transferencia Bancaria</button>`;
+            if(metodosPago.efectivo !== false) btnHtml += `<button style="background:#20bf6b; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('Efectivo (Bs. / USD)')">💵 Pago en Efectivo</button>`;
+            if(metodosPago.otro) btnHtml += `<button style="background:var(--color-acento); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:bold; width:100%; margin-bottom:6px; cursor:pointer;" onclick="window.enviarPedidoWhatsApp('${metodosPago.otro}')">💳 Pagar con ${metodosPago.otro}</button>`;
+
+            btnPagoContainer.innerHTML = btnHtml || '<div style="color:#aaa; font-size:11px;">No hay métodos de pago habilitados.</div>';
+
             document.getElementById('modalCarrito').style.display = 'flex';
         };
 
@@ -1174,7 +1310,6 @@
             window.abrirModalCarrito();
         };
 
-        // ENVIAR PEDIDO Y DESCONTAR STOCK AUTOMÁTICAMENTE
         window.enviarPedidoWhatsApp = async function(metodo) {
             if(carrito.length === 0) return;
             
@@ -1196,12 +1331,10 @@
             msj += `🇻🇪 *TOTAL EN BS.:* ${totalBS.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs. (Tasa: ${tasa.toFixed(2)} Bs./$)\n`;
             msj += `💳 *Método de pago:* ${metodo}`;
 
-            // RESTA EL STOCK EN LA BASE DE DATOS
             if(typeof window.descontarStockEnNube === 'function') {
                 await window.descontarStockEnNube();
             }
 
-            // LIMPIA EL CARRITO Y REDIRIGE A WHATSAPP
             carrito = [];
             window.actualizarBarraCarrito();
             document.getElementById('modalCarrito').style.display = 'none';
