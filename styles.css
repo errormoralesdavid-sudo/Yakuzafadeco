@@ -1,0 +1,569 @@
+/* =========================================
+   VARIABLES GLOBALES (Fácilmente escalable)
+   ========================================= */
+:root {
+    --color-acento: #ff3333;
+    --color-acento-hover: #cc0000;
+    --bg-dark: #0b0b0b;
+    --bg-card: rgba(22, 22, 22, 0.95);
+    --bg-input: #161616;
+    --text-light: #ffffff;
+    --text-muted: #cccccc;
+    --text-success: #4cd137;
+    --border-color: #333333;
+}
+
+/* =========================================
+   ESTILOS BASE
+   ========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    text-align: center;
+    padding-bottom: 90px; /* Espacio para la bolita del carrito */
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Fondo global con opacidad para resaltar tarjetas */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(11, 11, 11, 0.88);
+    z-index: -1;
+}
+
+/* Estilos genéricos para Íconos SVG */
+svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* =========================================
+   ENCABEZADO Y MARCA
+   ========================================= */
+.header-brand-banner {
+    width: 100%;
+    max-height: 220px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.header-brand-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.header-text-container {
+    padding: 15px 15px 5px 15px;
+}
+
+h1 {
+    color: var(--color-acento);
+    text-shadow: 0px 0px 15px rgba(0, 0, 0, 0.8);
+    margin: 0 0 5px 0;
+    font-size: 26px;
+    letter-spacing: 2px;
+}
+
+.subtitulo {
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+/* Etiqueta de Tasa BCV */
+.tasa-bcv-tag {
+    display: inline-flex;
+    align-items: center;
+    background: #181818;
+    border: 1px solid var(--border-color);
+    color: var(--text-success);
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   CARRUSELES PROMOCIONALES (Top y Bottom)
+   ========================================= */
+.banner-promo-container {
+    position: relative;
+    max-width: 700px;
+    height: 140px;
+    margin: 0 auto 15px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.6);
+    touch-action: pan-y; /* PWA: Evita bloqueos al hacer scroll */
+}
+
+@media (max-width: 600px) { 
+    .banner-promo-container { height: 110px; width: 92%; } 
+}
+
+.banner-promo-slides {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+}
+
+.banner-promo-slides img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.banner-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.dot.activo {
+    background: var(--color-acento);
+    width: 18px;
+    border-radius: 4px;
+}
+
+/* =========================================
+   ESTRUCTURA PRINCIPAL Y FILTROS
+   ========================================= */
+.main-wrapper {
+    padding: 0 15px;
+}
+
+.buscador-container {
+    margin-bottom: 15px;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.icon-input {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+.buscador-container input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.buscador-container input:focus {
+    border-color: var(--color-acento);
+}
+
+.filtros-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.btn-filtro {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-filtro:hover, .btn-filtro.activo {
+    background: var(--color-acento);
+    border-color: var(--color-acento);
+}
+
+/* =========================================
+   CATÁLOGO DE PRODUCTOS (Grilla)
+   ========================================= */
+.contenedor-tienda {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 700px;
+    margin: 0 auto 25px auto;
+}
+
+@media (max-width: 600px) { 
+    .contenedor-tienda { grid-template-columns: 1fr; } 
+}
+
+.producto {
+    background: var(--bg-card);
+    border: 1px solid #282828;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.badge-combo {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--color-acento);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.5);
+}
+
+.stock-indicator {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.stock-indicator span { color: var(--text-success); }
+.stock-indicator.agotado span { color: var(--color-acento); }
+
+.carrusel-container {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #222;
+    touch-action: pan-y;
+}
+
+.carrusel-slides {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.carrusel-slides img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+    cursor: zoom-in;
+}
+
+.carrusel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 4px;
+    z-index: 2;
+}
+
+.carrusel-btn.prev { left: 5px; }
+.carrusel-btn.next { right: 5px; }
+
+.producto h3 { font-size: 15px; margin: 8px 0 4px 0; color: #fff; }
+.producto p { font-size: 12px; color: #aaa; margin: 0 0 8px 0; }
+
+.precio-box { margin-bottom: 8px; }
+.precio-usd { font-weight: bold; color: #ffffff; font-size: 15px; }
+.precio-bs { font-weight: bold; color: var(--text-success); font-size: 13px; display: block; }
+
+/* Controles de Selección de Talla/Color y Cantidad */
+.opciones-grid { display: flex; gap: 5px; margin-bottom: 8px; }
+
+.dropdown-contenedor { position: relative; flex: 1; width: 100%; }
+
+.btn-desplegable {
+    background-color: #222;
+    color: white;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background-color: #1a1a1a;
+    width: 100%;
+    z-index: 99;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    border: 1px solid #444;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 9px;
+    text-decoration: none;
+    display: block;
+    font-size: 11px;
+    text-align: left;
+    border-bottom: 1px solid #282828;
+}
+
+.dropdown-content a:hover { background-color: var(--color-acento); }
+.show { display: block !important; }
+
+.cantidad-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #222;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.cantidad-container button {
+    background: #333;
+    color: white;
+    border: none;
+    padding: 3px 9px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-agregar-carrito {
+    background-color: var(--color-acento);
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-agregar-carrito:hover { filter: brightness(0.9); }
+.btn-agregar-carrito:disabled {
+    background-color: #444 !important;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   UI DEL CARRITO Y MODALES
+   ========================================= */
+.carrito-bolita {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 58px;
+    height: 58px;
+    background: var(--color-acento);
+    color: white; /* Para el SVG */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 6px 20px rgba(255, 51, 51, 0.6);
+    z-index: 2500;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    border: 2px solid #ffffff;
+    transition: transform 0.1s;
+}
+
+.carrito-bolita:active { cursor: grabbing; transform: scale(0.95); }
+
+.carrito-bolita-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ffffff;
+    color: #000000;
+    font-size: 11px;
+    font-weight: 900;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--color-acento);
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 3500;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-contenido {
+    background: #141414;
+    padding: 22px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    color: var(--color-acento);
+    font-size: 18px;
+}
+
+.btn-cerrar-modal {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.3s;
+}
+
+.btn-cerrar-modal:hover { opacity: 1; color: var(--color-acento); }
+
+.totales-box {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: right;
+    margin: 15px 0;
+    background: #111;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #222;
+}
+
+.total-bs { color: var(--text-success); margin-top:2px; }
+
+.modal-label {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+/* =========================================
+   ZONAS OCULTAS Y PIE DE PÁGINA
+   ========================================= */
+.corner-secret {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-color: transparent;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.corner-tl { top: 0; left: 0; }
+.corner-tr { top: 0; right: 0; }
+.corner-bl { bottom: 0; left: 0; }
+.corner-br { bottom: 0; right: 0; }
+
+footer {
+    margin-top: 30px;
+    padding: 20px 10px;
+    border-top: 1px solid #1a1a1a;
+    position: relative;
+}
+
+.redes-sociales {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.redes-sociales a {
+    background: #161616;
+    color: #ccc;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 11px;
+    border: 1px solid #282828;
+    transition: 0.3s;
+}
+
+.redes-sociales a:hover {
+    background: var(--color-acento);
+    color: white;
+    border-color: var(--color-acento);
+}
