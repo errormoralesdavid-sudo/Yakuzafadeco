@@ -388,3 +388,17 @@ document.getElementById('inputBuscador').addEventListener('keyup', (e) => {
         p.style.display = p.dataset.nombre.includes(txt) ? 'flex' : 'none';
     });
 });
+/* =========================================
+   7. REGISTRO DEL SERVICE WORKER (PWA)
+   ========================================= */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(registro => {
+                console.log('Service Worker registrado con éxito.', registro.scope);
+            })
+            .catch(error => {
+                console.warn('Error al registrar el Service Worker', error);
+            });
+    });
+}
