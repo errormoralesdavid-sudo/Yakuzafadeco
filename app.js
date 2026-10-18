@@ -22,7 +22,6 @@ let redesEmpresa = { wsp: "584123167126", ig: "", tk: "", fb: "", yt: "" };
 /* =========================================
    1. SEGURIDAD: SANITIZACIÓN DE DATOS
    ========================================= */
-// Evita ataques XSS limpiando los textos antes de enviarlos a la base de datos
 function sanitizarTexto(texto) {
     if (typeof texto !== 'string') return texto;
     const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', "/": '&#x2F;' };
@@ -30,7 +29,7 @@ function sanitizarTexto(texto) {
 }
 
 /* =========================================
-   2. CONEXIÓN A FIREBASE (LECTURA EN TIEMPO REAL)
+   2. CONEXIÓN A FIREBASE
    ========================================= */
 onSnapshot(doc(db, "yakuza_store", "catalogo_productos"), (snapshot) => {
     if (snapshot.exists()) {
@@ -58,7 +57,6 @@ onSnapshot(doc(db, "yakuza_store", "catalogo_productos"), (snapshot) => {
    3. ANIMACIONES CON ANIME.JS
    ========================================= */
 function animarReboteBolita() {
-    // Efecto elástico súper profesional al agregar al carrito
     anime({
         targets: '#bolitaCarrito',
         scale: [1, 1.4, 1],
@@ -100,12 +98,12 @@ function formatearPrecioUSD(monto) {
 function formatearPrecioBS(montoUSD) {
     let tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
     if(!tasa || tasa <= 0) tasa = 36.50;
-    return ((parseFloat(montoUSD) || 0) * tasa).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " Bs.";
+    return ((parseFloat(montoUSD) || 0) * tasa).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function obtenerTasaBCV() {
     if(tasaManualBs > 0) {
-        document.getElementById('tasaText').innerText = `Tasa Fija: ${tasaManualBs.toFixed(2)} Bs./$`;
+        document.getElementById('tasaText').innerText = `Fija: ${tasaManualBs.toFixed(2)}`;
         renderizarPaginaCompleta();
         return;
     }
@@ -119,16 +117,15 @@ async function obtenerTasaBCV() {
     } catch(e) {
         console.warn("API BCV falló, usando caché.");
     }
-    document.getElementById('tasaText').innerText = `BCV Oficial: ${tasaBCVActual.toFixed(2)} Bs./$`;
+    document.getElementById('tasaText').innerText = `Oficial: ${tasaBCVActual.toFixed(2)}`;
     renderizarPaginaCompleta();
 }
 
 function renderizarPaginaCompleta() {
-    // Aplicar variables de CSS
     document.documentElement.style.setProperty('--color-acento', colorAcento);
     document.body.style.backgroundImage = fondoUrl ? `url('${fondoUrl}')` : 'none';
 
-    // Textos de encabezado
+    // Manejo del logotipo (si hay URL de banner lo usamos, si no, se muestra logoPrincipal de index)
     if(headerBannerUrl) {
         document.getElementById('imgHeaderBannerTarget').src = headerBannerUrl;
         document.getElementById('headerBannerBox').style.display = 'block';
@@ -136,14 +133,12 @@ function renderizarPaginaCompleta() {
     } else {
         document.getElementById('headerBannerBox').style.display = 'none';
         document.getElementById('headerTextBox').style.display = 'block';
-        document.getElementById('brandHeader').innerText = nombreEmpresa;
         document.getElementById('brandSubHeader').innerText = subtituloEmpresa;
     }
 
     document.getElementById('pageTitle').innerText = `${nombreEmpresa} - Tienda`;
     document.getElementById('footerCopy').innerText = `${nombreEmpresa}. Todos los derechos reservados.`;
 
-    // Filtros
     const filtrosContainer = document.getElementById('contenedorFiltrosCat');
     let btnFiltrosHtml = `<button class="btn-filtro activo" data-action="filter-cat" data-cat="todos">Todos</button>`;
     categoriasTienda.forEach(c => {
@@ -159,7 +154,7 @@ function renderizarProductosTienda() {
     if(!container) return;
     
     if(listaProductosYakuza.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted); font-size:13px; grid-column:1/-1;">No hay productos disponibles en el catálogo.</div>';
+        container.innerHTML = '<div style="color:var(--text-muted); font-size:13px; grid-column:1/-1;">No hay productos disponibles.</div>';
         return;
     }
 
@@ -170,7 +165,6 @@ function renderizarProductosTienda() {
         const badgeHtml = p.badge ? `<div class="badge-combo">${p.badge}</div>` : '';
         const slidesHtml = p.imgs.map((img, i) => `<img src="${img}" alt="Producto" data-action="zoom-img" data-id="${p.id}" data-idx="${i}">`).join('');
         
-        // Estructura segura y limpia con data-actions (Sin onclick inline)
         html += `
             <div class="producto" data-categoria="${p.categoria.toLowerCase().trim()}" data-nombre="${p.nombre.toLowerCase()}">
                 ${badgeHtml}
@@ -187,7 +181,7 @@ function renderizarProductosTienda() {
                 
                 <div class="precio-box">
                     <span class="precio-usd">${formatearPrecioUSD(p.precio)}</span>
-                    <span class="precio-bs">≈ ${formatearPrecioBS(p.precio)}</span>
+                    <span class="precio-bs">≈ ${formatearPrecioBS(p.precio)} Bs.</span>
                 </div>
 
                 <div class="cantidad-container">
@@ -226,7 +220,6 @@ function actualizarBarraCarrito() {
     const bolita = document.getElementById('bolitaCarrito');
     if(totalItems > 0 && bolita.style.display === 'none') {
         bolita.style.display = 'flex';
-        // Animación suave de entrada de la bolita
         anime({ targets: bolita, scale: [0, 1], duration: 400 });
     } else if (totalItems === 0) {
         bolita.style.display = 'none';
@@ -241,6 +234,7 @@ function renderizarModalCarrito() {
     carrito.forEach((i, idx) => {
         let subUSD = i.precio * i.cantidad;
         let subBS = subUSD * tasa;
+        // Uso de SVG minimalista ("X") en vez de la palabra "Quitar"
         html += `
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222; padding:8px 0; font-size:12px;">
                 <div>
@@ -249,18 +243,26 @@ function renderizarModalCarrito() {
                     <span style="color:var(--text-light); font-weight:bold;">${formatearPrecioUSD(subUSD)}</span>
                     <span style="color:var(--text-success); font-size:11px; margin-left:4px;">(≈ ${subBS.toLocaleString('es-VE', { minimumFractionDigits: 2 })} Bs.)</span>
                 </div>
-                <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" data-action="remove-cart" data-idx="${idx}">Quitar</button>
+                <button class="btn-icon-danger" data-action="remove-cart" data-idx="${idx}" title="Quitar del carrito">
+                    <svg width="16" height="16"><use href="#icon-close"></use></svg>
+                </button>
             </div>
         `;
     });
     cont.innerHTML = html || '<p style="color:var(--text-muted); text-align:center;">Carrito vacío.</p>';
 
-    // Botones de pago limpios (Sin emojis)
+    // Botones de pago integrando tus imágenes PNG
     const btnPagoContainer = document.getElementById('contenedorMetodosPagoModal');
     let btnHtml = "";
-    if(metodosPago.pm !== false) btnHtml += `<button class="btn-agregar-carrito" style="background:#25d366; margin-bottom:6px;" data-action="pay" data-method="Pago Móvil">Pagar con Pago Móvil (Bs.)</button>`;
-    if(metodosPago.binance !== false) btnHtml += `<button class="btn-agregar-carrito" style="background:#f3ba2f; color:#000; margin-bottom:6px;" data-action="pay" data-method="Binance P2P">Pagar con Binance / USDT</button>`;
-    if(metodosPago.efectivo !== false) btnHtml += `<button class="btn-agregar-carrito" style="background:#20bf6b; margin-bottom:6px;" data-action="pay" data-method="Efectivo">Pago en Efectivo</button>`;
+    if(metodosPago.pm !== false) {
+        btnHtml += `<button class="btn-pago-img" style="background:#005e8e;" data-action="pay" data-method="Pago Móvil"><img src="pagomovil.png" alt="Pago Móvil"> Pago Móvil (Bs.)</button>`;
+    }
+    if(metodosPago.binance !== false) {
+        btnHtml += `<button class="btn-pago-img" style="background:#1e2329;" data-action="pay" data-method="Binance P2P"><img src="binance.png" alt="Binance"> Binance P2P (USDT)</button>`;
+    }
+    if(metodosPago.efectivo !== false) {
+        btnHtml += `<button class="btn-pago-img" style="background:#20bf6b;" data-action="pay" data-method="Efectivo"><img src="efectivo.png" alt="Efectivo"> Pago en Efectivo</button>`;
+    }
     
     btnPagoContainer.innerHTML = btnHtml || '<div style="color:var(--text-muted); font-size:11px;">Consulte métodos al vendedor.</div>';
 }
@@ -291,23 +293,19 @@ function enviarPedidoWhatsApp(metodo) {
    6. DELEGACIÓN DE EVENTOS (El Motor)
    ========================================= */
 document.addEventListener('click', (e) => {
-    // Buscamos si el elemento clicado o su padre tiene un 'data-action'
     const target = e.target.closest('[data-action]');
     
-    // Si hicieron click en la bolita del carrito (abrir modal)
     if(e.target.closest('#bolitaCarrito')) {
         renderizarModalCarrito();
         animarEntradaModal('modalCarrito');
         return;
     }
 
-    // Si hicieron click en cerrar carrito
     if(e.target.closest('#btnCerrarCarrito')) {
         cerrarModalAnimado('modalCarrito');
         return;
     }
 
-        // Click en la zona secreta del administrador
     if(e.target.id === 'btnAreaAdmin') {
         const clave = prompt("Clave Administrador:");
         if(clave === "612003" || clave === "yakuza") {
@@ -317,7 +315,6 @@ document.addEventListener('click', (e) => {
         }
         return;
     }
-   
 
     if (!target) return;
     const action = target.dataset.action;
@@ -359,9 +356,8 @@ document.addEventListener('click', (e) => {
             }
 
             actualizarBarraCarrito();
-            animarReboteBolita(); // <--- ANIMACIÓN AQUÍ
+            animarReboteBolita();
             
-            // Efecto de botón añadido
             const txtOriginal = target.innerText;
             target.innerText = "¡Agregado!";
             target.style.background = "var(--text-success)";
@@ -383,34 +379,30 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Buscador en tiempo real
 document.getElementById('inputBuscador').addEventListener('keyup', (e) => {
     const txt = e.target.value.toLowerCase();
     document.querySelectorAll('.producto').forEach(p => {
         p.style.display = p.dataset.nombre.includes(txt) ? 'flex' : 'none';
     });
 });
+
 /* =========================================
    7. REGISTRO DEL SERVICE WORKER (PWA)
    ========================================= */
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-            .then(registro => {
-                console.log('Service Worker registrado con éxito.', registro.scope);
-            })
-            .catch(error => {
-                console.warn('Error al registrar el Service Worker', error);
-            });
+            .then(registro => { console.log('SW registrado', registro.scope); })
+            .catch(error => { console.warn('Error SW', error); });
     });
 }
+
 /* =========================================
    8. SISTEMA DE ADMINISTRADOR SEGURIZADO
    ========================================= */
 let idProductoEdicion = null;
 
 function guardarEnNubeYakuza() {
-    // Sanitizamos variables globales antes de subir
     setDoc(doc(db, "yakuza_store", "catalogo_productos"), {
         nombreEmpresa: sanitizarTexto(nombreEmpresa) || "Yakuza Fade Co.",
         subtituloEmpresa: sanitizarTexto(subtituloEmpresa) || "Barbería, Ropa Oficial",
@@ -427,7 +419,6 @@ function guardarEnNubeYakuza() {
     }).then(() => {
         alert("Configuración y productos guardados en la nube con éxito.");
     }).catch(e => {
-        console.error("Error al guardar:", e);
         alert("Hubo un error al guardar en la base de datos.");
     });
 }
@@ -435,7 +426,6 @@ function guardarEnNubeYakuza() {
 function abrirPanelAdmin() {
     const contenedor = document.getElementById('modalAdminPanel');
     
-    // Inyectamos el HTML del panel usando diseño limpio sin emojis (Regla 7)
     contenedor.innerHTML = `
         <div class="modal-contenido" style="max-width: 500px;">
             <div class="modal-header">
@@ -501,7 +491,6 @@ function abrirPanelAdmin() {
     renderizarTarjetasAdmin();
 }
 
-// Expulsamos las funciones al entorno global (window) para que los botones inyectados puedan leerlas
 window.guardarConfiguracionTotal = function() {
     nombreEmpresa = document.getElementById('adm-empresa').value.trim() || "Yakuza Fade Co.";
     tasaManualBs = parseFloat(document.getElementById('adm-tasa').value) || 0;
@@ -536,14 +525,8 @@ window.guardarProductoDesdeAdmin = function() {
 
         const itemData = {
             id: idProductoEdicion || Date.now(),
-            nombre: nom, 
-            desc: desc, 
-            precio: precio, 
-            stock: stock,
-            categoria: cat, 
-            tallas: tallas, 
-            imgs: imgs,
-            tipoOpcion: "ninguna"
+            nombre: nom, desc: desc, precio: precio, stock: stock,
+            categoria: cat, tallas: tallas, imgs: imgs, tipoOpcion: "ninguna"
         };
 
         if(idProductoEdicion !== null) {
@@ -555,7 +538,7 @@ window.guardarProductoDesdeAdmin = function() {
 
         limpiarFormAdmin();
         renderizarTarjetasAdmin();
-        alert("Producto agregado a la lista temporal. Recuerda presionar [ SUBIR TODO A LA NUBE ] para guardar los cambios.");
+        alert("Producto agregado. Presiona [ SUBIR TODO A LA NUBE ] para guardar los cambios.");
     } else {
         alert("El nombre y el precio son obligatorios.");
     }
@@ -604,12 +587,14 @@ function renderizarTarjetasAdmin() {
                     <strong style="color:#fff; font-size:12px;">${p.nombre}</strong><br>
                     <span style="color:var(--text-success); font-size:11px;">$${p.precio} | Stock: ${p.stock}</span>
                 </div>
-                <div>
+                <div style="display: flex; gap: 6px;">
                     <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="cargarProductoParaEditar(${p.id})">Editar</button>
-                    <button style="background:#333; color:var(--color-acento); border:1px solid #444; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="eliminarProductoAdmin(${p.id})">Borrar</button>
+                    <button class="btn-icon-danger" onclick="eliminarProductoAdmin(${p.id})" title="Borrar Producto">
+                        <svg width="14" height="14"><use href="#icon-close"></use></svg>
+                    </button>
                 </div>
             </div>
         `;
     });
     cont.innerHTML = html || '<div style="color:#aaa; font-size:11px;">No hay productos registrados.</div>';
-       }
+}
