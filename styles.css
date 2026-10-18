@@ -95,7 +95,6 @@ h1 {
     background: #181818;
     border: 1px solid var(--border-color);
     color: var(--text-success);
-    font-size: 12px;
     font-weight: bold;
     padding: 6px 14px;
     border-radius: 20px;
@@ -230,7 +229,7 @@ h1 {
 }
 
 /* =========================================
-   CATÁLOGO DE PRODUCTOS (Grilla)
+   CATÁLOGO DE PRODUCTOS
    ========================================= */
 .contenedor-tienda {
     display: grid;
@@ -313,6 +312,59 @@ h1 {
 .precio-box { margin-bottom: 8px; }
 .precio-usd { font-weight: bold; color: #ffffff; font-size: 15px; }
 .precio-bs { font-weight: bold; color: var(--text-success); font-size: 13px; display: block; }
+
+/* Opciones de Variación (Tallas y Colores) */
+.opciones-grid { 
+    display: flex; 
+    gap: 5px; 
+    margin-bottom: 8px; 
+}
+.dropdown-contenedor { 
+    position: relative; 
+    flex: 1; 
+    width: 100%; 
+}
+.btn-desplegable {
+    background-color: #222;
+    color: white;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s;
+}
+.btn-desplegable:hover {
+    border-color: var(--color-acento);
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background-color: #1a1a1a;
+    width: 100%;
+    z-index: 99;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    border: 1px solid #444;
+    box-shadow: 0px -4px 10px rgba(0,0,0,0.5);
+}
+.dropdown-content a {
+    color: white;
+    padding: 9px;
+    text-decoration: none;
+    display: block;
+    font-size: 11px;
+    text-align: left;
+    border-bottom: 1px solid #282828;
+}
+.dropdown-content a:hover { background-color: var(--color-acento); }
+.show { display: block !important; }
 
 .cantidad-container {
     display: flex;
@@ -397,7 +449,7 @@ h1 {
     border: 2px solid var(--color-acento);
 }
 
-/* Fondo con efecto blur para modales profesionales */
+/* Modales profesionales */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -425,7 +477,7 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .modal-header h2 {
@@ -433,7 +485,7 @@ h1 {
     font-size: 18px;
 }
 
-/* Botón Minimalista SVG (Cerrar Modales y Quitar Productos) */
+/* Botones SVG Minimalistas y Efecto Vaciar Todo */
 .btn-cerrar-modal, .btn-icon-danger {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid #444;
@@ -446,32 +498,36 @@ h1 {
     align-items: center;
     transition: 0.3s;
 }
-
 .btn-cerrar-modal:hover { opacity: 1; color: var(--color-acento); background: rgba(255, 51, 51, 0.1); border-color: var(--color-acento); }
 .btn-icon-danger:hover { color: white; background: var(--color-acento); border-color: var(--color-acento); }
 
-/* Nuevos Botones de Pago con Imágenes */
+.btn-vaciar-hover {
+    transition: 0.3s;
+}
+.btn-vaciar-hover:hover {
+    background-color: var(--color-acento) !important;
+    color: white !important;
+}
+
+/* Nuevos Botones de Pago Protagonistas (Sin Letras) */
 .btn-pago-img {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     width: 100%;
-    padding: 10px;
+    height: 48px;
     border-radius: 8px;
-    border: none;
-    font-weight: bold;
-    margin-bottom: 8px;
+    border: 1px solid #333;
+    margin-bottom: 10px;
     cursor: pointer;
     transition: 0.2s;
-    color: #fff;
+    background: #1a1a1a;
 }
 .btn-pago-img img {
-    width: 22px;
-    height: 22px;
+    height: 30px;
     object-fit: contain;
 }
-.btn-pago-img:hover { filter: brightness(1.1); }
+.btn-pago-img:hover { filter: brightness(1.2); border-color: var(--text-success); }
 
 .totales-box {
     font-size: 14px;
@@ -489,7 +545,7 @@ h1 {
 .modal-label {
     font-size: 11px;
     color: #aaa;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     text-transform: uppercase;
 }
 
@@ -511,7 +567,7 @@ h1 {
 }
 
 /* =========================================
-   ZONAS OCULTAS Y PIE DE PÁGINA
+   PIE DE PÁGINA
    ========================================= */
 .corner-secret {
     position: absolute;
