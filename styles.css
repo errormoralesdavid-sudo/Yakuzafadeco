@@ -1,5 +1,5 @@
 /* =========================================
-   VARIABLES GLOBALES (Fácilmente escalable)
+   VARIABLES GLOBALES
    ========================================= */
 :root {
     --color-acento: #ff3333;
@@ -27,13 +27,12 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-light);
     text-align: center;
-    padding-bottom: 90px; /* Espacio para la bolita del carrito */
+    padding-bottom: 90px;
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
 }
 
-/* Fondo global con opacidad para resaltar tarjetas */
 body::before {
     content: "";
     position: fixed;
@@ -42,14 +41,13 @@ body::before {
     z-index: -1;
 }
 
-/* Estilos genéricos para Íconos SVG */
 svg {
     display: inline-block;
     vertical-align: middle;
 }
 
 /* =========================================
-   ENCABEZADO Y MARCA
+   ENCABEZADO Y TASA DE CAMBIO
    ========================================= */
 .header-brand-banner {
     width: 100%;
@@ -84,22 +82,32 @@ h1 {
     font-size: 13px;
 }
 
-/* Etiqueta de Tasa BCV */
+/* Animación de Resplandor para el BCV */
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px rgba(76, 209, 55, 0.1); border-color: #333; }
+    50% { box-shadow: 0 0 12px rgba(76, 209, 55, 0.5); border-color: var(--text-success); }
+    100% { box-shadow: 0 0 5px rgba(76, 209, 55, 0.1); border-color: #333; }
+}
+
 .tasa-bcv-tag {
     display: inline-flex;
     align-items: center;
     background: #181818;
     border: 1px solid var(--border-color);
     color: var(--text-success);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
-    padding: 4px 12px;
-    border-radius: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
     margin-bottom: 15px;
 }
 
+.pulse-anim {
+    animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
 /* =========================================
-   CARRUSELES PROMOCIONALES (Top y Bottom)
+   CARRUSELES PROMOCIONALES
    ========================================= */
 .banner-promo-container {
     position: relative;
@@ -110,7 +118,7 @@ h1 {
     overflow: hidden;
     border: 1px solid var(--border-color);
     box-shadow: 0px 4px 15px rgba(0,0,0,0.6);
-    touch-action: pan-y; /* PWA: Evita bloqueos al hacer scroll */
+    touch-action: pan-y;
 }
 
 @media (max-width: 600px) { 
@@ -299,74 +307,12 @@ h1 {
     cursor: zoom-in;
 }
 
-.carrusel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: none;
-    padding: 5px 8px;
-    cursor: pointer;
-    font-size: 12px;
-    border-radius: 4px;
-    z-index: 2;
-}
-
-.carrusel-btn.prev { left: 5px; }
-.carrusel-btn.next { right: 5px; }
-
 .producto h3 { font-size: 15px; margin: 8px 0 4px 0; color: #fff; }
 .producto p { font-size: 12px; color: #aaa; margin: 0 0 8px 0; }
 
 .precio-box { margin-bottom: 8px; }
 .precio-usd { font-weight: bold; color: #ffffff; font-size: 15px; }
 .precio-bs { font-weight: bold; color: var(--text-success); font-size: 13px; display: block; }
-
-/* Controles de Selección de Talla/Color y Cantidad */
-.opciones-grid { display: flex; gap: 5px; margin-bottom: 8px; }
-
-.dropdown-contenedor { position: relative; flex: 1; width: 100%; }
-
-.btn-desplegable {
-    background-color: #222;
-    color: white;
-    border: 1px solid var(--border-color);
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    background-color: #1a1a1a;
-    width: 100%;
-    z-index: 99;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 4px;
-    border: 1px solid #444;
-}
-
-.dropdown-content a {
-    color: white;
-    padding: 9px;
-    text-decoration: none;
-    display: block;
-    font-size: 11px;
-    text-align: left;
-    border-bottom: 1px solid #282828;
-}
-
-.dropdown-content a:hover { background-color: var(--color-acento); }
-.show { display: block !important; }
 
 .cantidad-container {
     display: flex;
@@ -412,7 +358,7 @@ h1 {
 }
 
 /* =========================================
-   UI DEL CARRITO Y MODALES
+   UI DEL CARRITO, BOTONES Y MODALES
    ========================================= */
 .carrito-bolita {
     position: fixed;
@@ -421,7 +367,7 @@ h1 {
     width: 58px;
     height: 58px;
     background: var(--color-acento);
-    color: white; /* Para el SVG */
+    color: white;
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -432,10 +378,7 @@ h1 {
     user-select: none;
     touch-action: none;
     border: 2px solid #ffffff;
-    transition: transform 0.1s;
 }
-
-.carrito-bolita:active { cursor: grabbing; transform: scale(0.95); }
 
 .carrito-bolita-badge {
     position: absolute;
@@ -454,11 +397,13 @@ h1 {
     border: 2px solid var(--color-acento);
 }
 
+/* Fondo con efecto blur para modales profesionales */
 .modal-overlay {
     display: none;
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
     z-index: 3500;
     justify-content: center;
     align-items: center;
@@ -488,16 +433,45 @@ h1 {
     font-size: 18px;
 }
 
-.btn-cerrar-modal {
-    background: none;
-    border: none;
-    color: #fff;
+/* Botón Minimalista SVG (Cerrar Modales y Quitar Productos) */
+.btn-cerrar-modal, .btn-icon-danger {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    color: #aaa;
+    border-radius: 6px;
+    padding: 6px;
     cursor: pointer;
-    opacity: 0.7;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     transition: 0.3s;
 }
 
-.btn-cerrar-modal:hover { opacity: 1; color: var(--color-acento); }
+.btn-cerrar-modal:hover { opacity: 1; color: var(--color-acento); background: rgba(255, 51, 51, 0.1); border-color: var(--color-acento); }
+.btn-icon-danger:hover { color: white; background: var(--color-acento); border-color: var(--color-acento); }
+
+/* Nuevos Botones de Pago con Imágenes */
+.btn-pago-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #fff;
+}
+.btn-pago-img img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+.btn-pago-img:hover { filter: brightness(1.1); }
 
 .totales-box {
     font-size: 14px;
@@ -517,6 +491,23 @@ h1 {
     color: #aaa;
     margin-bottom: 6px;
     text-transform: uppercase;
+}
+
+.modal-zoom {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 5000;
+    justify-content: center;
+    align-items: center;
+    touch-action: pan-y;
+}
+.modal-zoom img {
+    max-width: 92%;
+    max-height: 85vh;
+    border-radius: 8px;
+    border: 2px solid var(--color-acento);
 }
 
 /* =========================================
