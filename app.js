@@ -1,9 +1,6 @@
 import { doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { db } from './firebase-config.js';
 
-/* =========================================
-   ESTADO GLOBAL
-   ========================================= */
 let carrito = [];
 let listaProductosYakuza = [];
 let nombreEmpresa = "Yakuza Fade Co.";
@@ -20,19 +17,25 @@ let categoriasTienda = ["Combos", "Ropa", "Medias", "Barbería"];
 let redesEmpresa = { wsp: "584123167126", ig: "", tk: "", fb: "", yt: "" };
 
 let indicesCarrusel = {};
+let timerBanners = {};
 
-/* =========================================
-   1. SEGURIDAD: SANITIZACIÓN DE DATOS
-   ========================================= */
 function sanitizarTexto(texto) {
     if (typeof texto !== 'string') return texto;
     const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', "/": '&#x2F;' };
     return texto.replace(/[&<>"'/]/ig, (match) => (mapa[match]));
 }
 
-/* =========================================
-   2. CONEXIÓN A FIREBASE
-   ========================================= */
+// Reemplazo visual de los "Alerts" feos por Toasts elegantes
+function mostrarToast(mensaje) {
+    const toast = document.getElementById('toastNotification');
+    toast.innerText = mensaje;
+    toast.style.display = 'block';
+    anime({ targets: toast, opacity: [0, 1], bottom: ['10px', '20px'], duration: 300, easing: 'easeOutQuad' });
+    setTimeout(() => {
+        anime({ targets: toast, opacity: [1, 0], duration: 300, easing: 'easeInQuad', complete: () => { toast.style.display = 'none'; }});
+    }, 3000);
+}
+
 onSnapshot(doc(db, "yakuza_store", "catalogo_productos"), (snapshot) => {
     if (snapshot.exists()) {
         const data = snapshot.data();
@@ -55,40 +58,21 @@ onSnapshot(doc(db, "yakuza_store", "catalogo_productos"), (snapshot) => {
     }
 });
 
-/* =========================================
-   3. ANIMACIONES (ANIME.JS)
-   ========================================= */
-function animarReboteBolita() {
-    anime({ targets: '#bolitaCarrito', scale: [1, 1.4, 1], duration: 600, easing: 'easeOutElastic(1, .5)' });
-}
-function animarEntradaModal(idModal) {
-    const modal = document.getElementById(idModal);
-    modal.style.display = 'flex';
-    anime({ targets: modal, opacity: [0, 1], duration: 300, easing: 'easeOutQuad' });
-}
-function cerrarModalAnimado(idModal) {
-    const modal = document.getElementById(idModal);
-    anime({ targets: modal, opacity: [1, 0], duration: 200, easing: 'easeInQuad', complete: () => { modal.style.display = 'none'; }});
-}
+function animarReboteBolita() { anime({ targets: '#bolitaCarrito', scale: [1, 1.4, 1], duration: 600, easing: 'easeOutElastic(1, .5)' }); }
+function animarEntradaModal(idModal) { const modal = document.getElementById(idModal); modal.style.display = 'flex'; anime({ targets: modal, opacity: [0, 1], duration: 300, easing: 'easeOutQuad' }); }
+function cerrarModalAnimado(idModal) { const modal = document.getElementById(idModal); anime({ targets: modal, opacity: [1, 0], duration: 200, easing: 'easeInQuad', complete: () => { modal.style.display = 'none'; }}); }
 
-/* =========================================
-   4. RENDERIZADO DE INTERFAZ (UI)
-   ========================================= */
-function formatearPrecioUSD(monto) {
-    let val = parseFloat(monto) || 0;
-    return (val % 1 === 0) ? "$" + val.toFixed(0) : "$" + val.toFixed(2);
-}
-
+function formatearPrecioUSD(monto) { let val = parseFloat(monto) || 0; return (val % 1 === 0) ? "$" + val.toFixed(0) : "$" + val.toFixed(2); }
 function formatearPrecioBS(montoUSD) {
     let tasa = (tasaManualBs > 0) ? tasaManualBs : tasaBCVActual;
     if(!tasa || tasa <= 0) tasa = 36.50;
     return ((parseFloat(montoUSD) || 0) * tasa).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-async function obtenerTasaBCV(forzarAlert = false) {
+async function obtenerTasaBCV(forzarToast = false) {
     if(tasaManualBs > 0) {
         document.getElementById('tasaText').innerText = `Fija: ${tasaManualBs.toFixed(2)}`;
-        if(forzarAlert) alert("Usando Tasa Manual Fija.");
+        if(forzarToast) mostrarToast("Usando Tasa Manual Fija");
         renderizarPaginaCompleta();
         return;
     }
@@ -98,10 +82,10 @@ async function obtenerTasaBCV(forzarAlert = false) {
         if(data && data.promedio) {
             tasaBCVActual = parseFloat(data.promedio);
             localStorage.setItem('bcv_tasa_cache', tasaBCVActual);
-            if(forzarAlert) alert("Tasa BCV actualizada desde internet con éxito.");
+            if(forzarToast) mostrarToast("Tasa BCV actualizada (Internet)");
         }
     } catch(e) {
-        if(forzarAlert) alert("Fallo al conectar con BCV. Usando última tasa guardada.");
+        if(forzarToast) mostrarToast("Error de conexión. Usando caché.");
     }
     document.getElementById('tasaText').innerText = `Oficial: ${tasaBCVActual.toFixed(2)}`;
     renderizarPaginaCompleta();
@@ -114,6 +98,7 @@ function renderizarCarruselPublicitario(wrapId, slidesId, dotsId, listaImgs) {
 
     if(!listaImgs || listaImgs.length === 0) {
         wrap.style.display = 'none';
+        if(timerBanners[wrapId]) clearInterval(timerBanners[wrapId]);
         return;
     }
 
@@ -121,7 +106,16 @@ function renderizarCarruselPublicitario(wrapId, slidesId, dotsId, listaImgs) {
     slidesBox.innerHTML = listaImgs.map(img => `<img src="${img}" alt="Anuncio">`).join('');
     dotsBox.innerHTML = listaImgs.map((_, i) => `<div class="dot ${i===0?'activo':''}"></div>`).join('');
     
-    // Lógica básica de auto-play omitida para brevedad, se añade con CSS/JS en el swipe
+    // Autoplay cada 5 segundos
+    let idx = 0;
+    if(timerBanners[wrapId]) clearInterval(timerBanners[wrapId]);
+    if(listaImgs.length > 1) {
+        timerBanners[wrapId] = setInterval(() => {
+            idx = (idx + 1) % listaImgs.length;
+            slidesBox.style.transform = `translateX(${-idx * 100}%)`;
+            dotsBox.querySelectorAll('.dot').forEach((d, i) => { d.classList.toggle('activo', i === idx); });
+        }, 5000);
+    }
 }
 
 function renderizarPaginaCompleta() {
@@ -148,6 +142,15 @@ function renderizarPaginaCompleta() {
     });
     filtrosContainer.innerHTML = btnFiltrosHtml;
 
+    // Redes Sociales en Footer
+    const footerRedes = document.getElementById('footerRedes');
+    let redHtml = "";
+    if(redesEmpresa.wsp) redHtml += `<a href="https://wa.me/${redesEmpresa.wsp}" target="_blank">WhatsApp</a>`;
+    if(redesEmpresa.ig) redHtml += `<a href="${redesEmpresa.ig}" target="_blank">Instagram</a>`;
+    if(redesEmpresa.tk) redHtml += `<a href="${redesEmpresa.tk}" target="_blank">TikTok</a>`;
+    if(redesEmpresa.fb) redHtml += `<a href="${redesEmpresa.fb}" target="_blank">Facebook</a>`;
+    footerRedes.innerHTML = redHtml;
+
     renderizarProductosTienda();
 }
 
@@ -156,7 +159,7 @@ function renderizarProductosTienda() {
     if(!container) return;
     
     if(listaProductosYakuza.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted); font-size:13px; grid-column:1/-1;">No hay productos disponibles.</div>';
+        container.innerHTML = '<div style="color:var(--text-muted); font-size:13px; grid-column:1/-1;">Catálogo vacío.</div>';
         return;
     }
 
@@ -167,7 +170,7 @@ function renderizarProductosTienda() {
         const badgeHtml = p.badge ? `<div class="badge-combo">${p.badge}</div>` : '';
         const slidesHtml = p.imgs.map((img, i) => `<img src="${img}" alt="Producto" data-action="zoom-img" data-src="${img}">`).join('');
         
-        let tallasOpt = (p.tallas && p.tallas.length > 0) ? p.tallas.map(t => `<a href="#" data-action="select-opt" data-val="${t}">${t}</a>`).join('') : `<a href="#" data-action="select-opt" data-val="Única">Única</a>`;
+        let tallasOpt = (p.tallas && p.tallas.length > 0) ? p.tallas.map(t => `<a href="#" data-action="select-opt" data-val="${t}" data-id="${p.id}" data-type="talla">${t}</a>`).join('') : `<a href="#" data-action="select-opt" data-val="Única" data-id="${p.id}" data-type="talla">Única</a>`;
         let listaOpciones = p.opciones || [];
         let labelOpcion = p.tipoOpcion === 'material' ? 'Material' : 'Color';
         
@@ -179,7 +182,7 @@ function renderizarProductosTienda() {
         `;
 
         if(p.tipoOpcion && p.tipoOpcion !== 'ninguna' && listaOpciones.length > 0) {
-            let opcItems = listaOpciones.map(c => `<a href="#" data-action="select-opt" data-val="${c}">${c}</a>`).join('');
+            let opcItems = listaOpciones.map((c, idx) => `<a href="#" data-action="select-opt" data-val="${c}" data-id="${p.id}" data-type="color" data-idx="${idx}">${c}</a>`).join('');
             opcionesGridHtml += `
                 <div class="dropdown-contenedor">
                     <button type="button" data-action="toggle-drop" class="btn-desplegable">${labelOpcion}: <span class="opcion-elegida">${listaOpciones[0]}</span> ▾</button>
@@ -192,9 +195,7 @@ function renderizarProductosTienda() {
             <div class="producto" data-categoria="${p.categoria.toLowerCase().trim()}" data-nombre="${p.nombre.toLowerCase()}">
                 ${badgeHtml}
                 <div class="carrusel-container swipe-area" data-id="${p.id}">
-                    <div class="carrusel-slides" id="slides-${p.id}">
-                        ${slidesHtml}
-                    </div>
+                    <div class="carrusel-slides" id="slides-${p.id}">${slidesHtml}</div>
                 </div>
                 
                 <div class="stock-indicator ${estaAgotado ? 'agotado' : ''}">
@@ -209,9 +210,7 @@ function renderizarProductosTienda() {
                     <span class="precio-bs">≈ ${formatearPrecioBS(p.precio)} Bs.</span>
                 </div>
                 
-                <div class="opciones-grid">
-                    ${opcionesGridHtml}
-                </div>
+                <div class="opciones-grid">${opcionesGridHtml}</div>
 
                 <div class="cantidad-container">
                     <span>Cant:</span>
@@ -233,9 +232,6 @@ function renderizarProductosTienda() {
     activarSwipeCarruseles();
 }
 
-/* =========================================
-   5. LÓGICA DEL CARRITO
-   ========================================= */
 function actualizarBarraCarrito() {
     let totalItems = 0; let totalMontoUSD = 0;
     carrito.forEach(i => { totalItems += i.cantidad; totalMontoUSD += (i.precio * i.cantidad); });
@@ -282,13 +278,12 @@ function renderizarModalCarrito() {
 
     document.getElementById('btnVaciarCarrito').style.display = carrito.length > 0 ? 'inline-block' : 'none';
 
-    // Botones de pago 100% Gráficos (Sin Texto)
+    // Botones de pago 100% Gráficos
     const btnPagoContainer = document.getElementById('contenedorMetodosPagoModal');
     let btnHtml = "";
     if(metodosPago.pm) btnHtml += `<button class="btn-pago-img" data-action="pay" data-method="Pago Móvil"><img src="pagomovil.png" alt="Pago Móvil"></button>`;
     if(metodosPago.binance) btnHtml += `<button class="btn-pago-img" data-action="pay" data-method="Binance P2P"><img src="binance.png" alt="Binance"></button>`;
     if(metodosPago.efectivo) btnHtml += `<button class="btn-pago-img" data-action="pay" data-method="Efectivo"><img src="efectivo.png" alt="Efectivo"></button>`;
-    
     btnPagoContainer.innerHTML = btnHtml || '<div style="color:var(--text-muted); font-size:11px;">Consulte métodos al vendedor.</div>';
 }
 
@@ -320,7 +315,6 @@ function enviarPedidoWhatsApp(metodo) {
 document.addEventListener('click', (e) => {
     const target = e.target.closest('[data-action]');
     
-    // Si haces clic fuera de un menú desplegable, ciérralos todos
     if(!e.target.closest('.dropdown-contenedor')) {
         document.querySelectorAll('.dropdown-content').forEach(c => c.classList.remove('show'));
     }
@@ -331,17 +325,12 @@ document.addEventListener('click', (e) => {
         return;
     }
 
-    if(e.target.closest('#btnCerrarCarrito')) {
-        cerrarModalAnimado('modalCarrito');
-        return;
-    }
-
     if(e.target.id === 'btnAreaAdmin') {
         const clave = prompt("Clave Administrador:");
         if(clave === "612003" || clave === "yakuza") {
             abrirPanelAdmin();
         } else if (clave) {
-            alert("Clave incorrecta.");
+            mostrarToast("Clave incorrecta");
         }
         return;
     }
@@ -369,10 +358,26 @@ document.addEventListener('click', (e) => {
         case 'select-opt':
             e.preventDefault();
             const val = target.dataset.val;
+            const type = target.dataset.type;
+            const idProdSelect = target.dataset.id;
             const parent = target.closest('.dropdown-contenedor');
             const span = parent.querySelector('.talla-elegida') || parent.querySelector('.opcion-elegida');
             if(span) span.innerText = val;
             parent.querySelector('.dropdown-content').classList.remove('show');
+            
+            // Si elige un color/material y tiene imagen asignada, deslizar carrusel
+            if(type === 'color' && target.dataset.idx !== undefined) {
+                const pObj = listaProductosYakuza.find(x => x.id == idProdSelect);
+                if(pObj && pObj.imgs && pObj.imgs[target.dataset.idx]) {
+                    const idxMove = parseInt(target.dataset.idx);
+                    const idSlides = `slides-${idProdSelect}`;
+                    const elSlides = document.getElementById(idSlides);
+                    if(elSlides) {
+                        indicesCarrusel[idSlides] = idxMove;
+                        elSlides.style.transform = `translateX(${-idxMove * 100}%)`;
+                    }
+                }
+            }
             break;
 
         case 'qty-change':
@@ -390,7 +395,7 @@ document.addEventListener('click', (e) => {
             const c = parseInt(tarjeta.querySelector('.contador-val').innerText);
             
             if(c > prodObj.stock) {
-                alert(`Solo quedan ${prodObj.stock} unidades disponibles.`);
+                mostrarToast(`Solo ${prodObj.stock} disponibles`);
                 return;
             }
 
@@ -403,7 +408,7 @@ document.addEventListener('click', (e) => {
             const existente = carrito.find(i => i.id === idProd && i.variacion === varStr);
             if(existente) {
                 if(existente.cantidad + c > prodObj.stock) {
-                    alert("Stock insuficiente.");
+                    mostrarToast("Stock insuficiente");
                     return;
                 }
                 existente.cantidad += c;
@@ -427,7 +432,7 @@ document.addEventListener('click', (e) => {
             break;
             
         case 'empty-cart':
-            if(confirm("¿Seguro que deseas eliminar todos los productos?")) {
+            if(confirm("¿Deseas vaciar todo el carrito?")) {
                 carrito = [];
                 actualizarBarraCarrito();
                 renderizarModalCarrito();
@@ -443,6 +448,10 @@ document.addEventListener('click', (e) => {
             animarEntradaModal('modalZoom');
             break;
 
+        case 'close-cart':
+            cerrarModalAnimado('modalCarrito');
+            break;
+            
         case 'close-zoom':
             cerrarModalAnimado('modalZoom');
             break;
@@ -515,8 +524,8 @@ function guardarEnNubeYakuza() {
         productos: listaProductosYakuza,
         redes: redesEmpresa
     }).then(() => {
-        alert("Cambios guardados en la nube con éxito.");
-    }).catch(e => alert("Error al guardar en la base de datos."));
+        mostrarToast("Guardado en la nube ☁️");
+    }).catch(e => mostrarToast("Error al guardar"));
 }
 
 function abrirPanelAdmin() {
@@ -525,49 +534,55 @@ function abrirPanelAdmin() {
     contenedor.innerHTML = `
         <div class="modal-contenido" style="max-width: 500px; padding-bottom: 40px;">
             <div class="modal-header">
-                <h2>Panel de Control</h2>
+                <h2>Panel Control</h2>
                 <button class="btn-cerrar-modal" onclick="document.getElementById('modalAdminPanel').style.display='none'">
                     <svg width="20" height="20"><use href="#icon-close"></use></svg>
                 </button>
             </div>
             
-            <!-- CONFIGURACIÓN GLOBAL -->
             <div style="background: var(--bg-input); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);">
                 <h3 style="color: var(--color-acento); font-size: 14px; margin-bottom: 10px;">CONFIGURACIÓN GLOBAL</h3>
                 
-                <label style="font-size:11px; color:var(--text-muted);">Tasa Dólar Manual (0 = Automático BCV):</label>
+                <label style="font-size:11px; color:var(--text-muted);">Tasa Manual (0 = Automático API):</label>
                 <div style="display:flex; gap:6px; margin-bottom:10px;">
                     <input type="number" step="0.01" id="adm-tasa" value="${tasaManualBs}" style="flex:1; padding:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
-                    <button data-action="update-bcv-api" style="padding:8px 12px; background:#333; color:var(--text-success); border:1px solid #444; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">API</button>
+                    <button data-action="update-bcv-api" style="padding:8px 12px; background:#333; color:var(--text-success); border:1px solid #444; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">ACTUALIZAR API</button>
                 </div>
                 
-                <label style="font-size:11px; color:var(--text-muted);">Color Principal (Acento):</label>
+                <label style="font-size:11px; color:var(--text-muted);">Color Tema:</label>
                 <input type="color" id="adm-color" value="${colorAcento}" style="width:100%; height:35px; border:none; background:none; cursor:pointer; margin-bottom:10px;">
                 
-                <label style="font-size:11px; color:var(--text-muted);">URL Banner Promocional (Opcional - Arriba):</label>
+                <label style="font-size:11px; color:var(--text-muted);">URL Banner Promocional Arriba (Tamaño recomendado 800x400):</label>
                 <input type="text" id="adm-banner-top" value="${bannersTop[0] || ''}" placeholder="Pega el link de la imagen aquí" style="width:100%; padding:8px; margin-bottom:10px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                 
-                <h4 style="font-size:12px; color:#fff; margin-bottom:5px; margin-top:5px;">Métodos de Pago Activos</h4>
+                <h4 style="font-size:12px; color:#fff; margin-bottom:5px; margin-top:5px;">Redes Sociales (Links)</h4>
+                <input type="text" id="adm-red-wsp" value="${redesEmpresa.wsp || ''}" placeholder="Número WhatsApp (Ej: 584121234567)" style="width:100%; padding:8px; margin-bottom:5px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                <input type="text" id="adm-red-ig" value="${redesEmpresa.ig || ''}" placeholder="Link Instagram" style="width:100%; padding:8px; margin-bottom:5px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                
+                <h4 style="font-size:12px; color:#fff; margin-bottom:5px; margin-top:10px;">Métodos de Pago Activos</h4>
                 <label style="font-size:12px; display:block;"><input type="checkbox" id="adm-pm" ${metodosPago.pm ? 'checked' : ''}> Pago Móvil</label>
                 <label style="font-size:12px; display:block;"><input type="checkbox" id="adm-binance" ${metodosPago.binance ? 'checked' : ''}> Binance P2P</label>
                 <label style="font-size:12px; display:block; margin-bottom:5px;"><input type="checkbox" id="adm-efectivo" ${metodosPago.efectivo ? 'checked' : ''}> Efectivo</label>
             </div>
 
-            <!-- AGREGAR/EDITAR PRODUCTO -->
             <div style="background: var(--bg-input); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);">
                 <h3 id="titulo-form-admin" style="color: var(--color-acento); font-size: 14px; margin-bottom: 10px;">AGREGAR / EDITAR PRODUCTO</h3>
                 
-                <input type="text" id="adm-p-nombre" placeholder="Nombre del Producto" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                <input type="text" id="adm-p-nombre" placeholder="Nombre" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                 <input type="text" id="adm-p-desc" placeholder="Descripción corta" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                <input type="text" id="adm-p-badge" placeholder="Etiqueta (Ej: ¡Oferta 30%!)" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                 
                 <div style="display:flex; gap:8px; margin-bottom:8px;">
                     <input type="number" step="0.01" id="adm-p-precio" placeholder="Precio ($)" style="width:50%; padding:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                     <input type="number" id="adm-p-stock" placeholder="Stock (Cant)" style="width:50%; padding:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                 </div>
 
-                <select id="adm-p-cat" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
-                    ${categoriasTienda.map(c => `<option value="${c.toLowerCase().trim()}">${c.trim()}</option>`).join('')}
-                </select>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <select id="adm-p-cat" style="width:50%; padding:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                        ${categoriasTienda.map(c => `<option value="${c.toLowerCase().trim()}">${c.trim()}</option>`).join('')}
+                    </select>
+                    <input type="text" id="adm-nueva-cat" placeholder="O Nueva Cat..." style="width:50%; padding:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                </div>
 
                 <input type="text" id="adm-p-tallas" placeholder="Tallas separadas por coma (S, M, L)" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                 
@@ -576,24 +591,22 @@ function abrirPanelAdmin() {
                     <option value="color">Opción de Color</option>
                     <option value="material">Opción de Material</option>
                 </select>
-                <input type="text" id="adm-p-opciones" placeholder="Opciones por coma (Verde, Azul | Oro, Plata)" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                <input type="text" id="adm-p-opciones" placeholder="Opciones (Verde, Azul | Oro, Plata)" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
 
                 <input type="text" id="adm-p-img1" placeholder="URL Imagen Principal 1" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
-                <input type="text" id="adm-p-img2" placeholder="URL Imagen Adicional 2 (Opcional)" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
+                <input type="text" id="adm-p-img2" placeholder="URL Imagen Adicional 2" style="width:100%; padding:8px; margin-bottom:8px; background:#111; color:#fff; border:1px solid #333; border-radius:4px;">
                 
-                <button onclick="guardarProductoDesdeAdmin()" class="btn-agregar-carrito">Guardar en Lista</button>
+                <button onclick="guardarProductoDesdeAdmin()" class="btn-agregar-carrito">Guardar Producto en Lista</button>
                 <button onclick="limpiarFormAdmin()" style="width:100%; padding:10px; margin-top:8px; background:#333; color:#fff; border:none; border-radius:6px; cursor:pointer;">Limpiar Formulario</button>
             </div>
 
-            <!-- CATÁLOGO -->
             <div style="background: var(--bg-input); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
                 <h3 style="color: var(--color-acento); font-size: 14px; margin-bottom: 10px;">CATÁLOGO ACTUAL</h3>
                 <div id="adminTarjetasProductos"></div>
             </div>
             
-            <!-- BOTÓN MAESTRO DE GUARDADO -->
             <button onclick="guardarConfiguracionTotal()" style="width:100%; padding:14px; margin-top:15px; background:var(--text-success); color:#000; font-weight:bold; border:none; border-radius:6px; cursor:pointer; font-size:14px;">
-                [ SUBIR TODO A LA NUBE ]
+                GUARDAR Y SUBIR A LA NUBE
             </button>
         </div>
     `;
@@ -602,13 +615,15 @@ function abrirPanelAdmin() {
     renderizarTarjetasAdmin();
 }
 
-// Funciones globales inyectadas al window para los botones de HTML del Admin
 window.guardarConfiguracionTotal = function() {
     tasaManualBs = parseFloat(document.getElementById('adm-tasa').value) || 0;
     colorAcento = document.getElementById('adm-color').value || "#ff3333";
     
     const bannerTop = document.getElementById('adm-banner-top').value.trim();
     bannersTop = bannerTop ? [bannerTop] : [];
+
+    redesEmpresa.wsp = sanitizarTexto(document.getElementById('adm-red-wsp').value.trim());
+    redesEmpresa.ig = sanitizarTexto(document.getElementById('adm-red-ig').value.trim());
 
     metodosPago = {
         pm: document.getElementById('adm-pm').checked,
@@ -626,9 +641,14 @@ window.guardarConfiguracionTotal = function() {
 window.guardarProductoDesdeAdmin = function() {
     const nom = sanitizarTexto(document.getElementById('adm-p-nombre').value.trim());
     const desc = sanitizarTexto(document.getElementById('adm-p-desc').value.trim());
+    const badge = sanitizarTexto(document.getElementById('adm-p-badge').value.trim());
     const precio = parseFloat(document.getElementById('adm-p-precio').value) || 0;
     const stock = parseInt(document.getElementById('adm-p-stock').value) || 0;
-    const cat = sanitizarTexto(document.getElementById('adm-p-cat').value);
+    
+    const nuevaCat = sanitizarTexto(document.getElementById('adm-nueva-cat').value.trim());
+    const catFinal = nuevaCat ? nuevaCat : sanitizarTexto(document.getElementById('adm-p-cat').value);
+    if(nuevaCat && !categoriasTienda.includes(nuevaCat)) categoriasTienda.push(nuevaCat);
+
     const tallasStr = sanitizarTexto(document.getElementById('adm-p-tallas').value.trim());
     const tipoOpc = sanitizarTexto(document.getElementById('adm-p-tipo-opc').value);
     const opcionesStr = sanitizarTexto(document.getElementById('adm-p-opciones').value.trim());
@@ -646,8 +666,8 @@ window.guardarProductoDesdeAdmin = function() {
 
         const itemData = {
             id: idProductoEdicion || Date.now(),
-            nombre: nom, desc: desc, precio: precio, stock: stock,
-            categoria: cat, tallas: tallas, tipoOpcion: tipoOpc, opciones: opcionesList, imgs: imgs
+            nombre: nom, desc: desc, badge: badge, precio: precio, stock: stock,
+            categoria: catFinal, tallas: tallas, tipoOpcion: tipoOpc, opciones: opcionesList, imgs: imgs
         };
 
         if(idProductoEdicion !== null) {
@@ -659,8 +679,9 @@ window.guardarProductoDesdeAdmin = function() {
 
         limpiarFormAdmin();
         renderizarTarjetasAdmin();
+        mostrarToast("Añadido a lista. ¡No olvides guardar!");
     } else {
-        alert("El nombre y el precio son obligatorios.");
+        mostrarToast("Nombre y precio son obligatorios");
     }
 };
 
@@ -669,8 +690,10 @@ window.limpiarFormAdmin = function() {
     document.getElementById('titulo-form-admin').innerText = "AGREGAR NUEVO PRODUCTO";
     document.getElementById('adm-p-nombre').value = "";
     document.getElementById('adm-p-desc').value = "";
+    document.getElementById('adm-p-badge').value = "";
     document.getElementById('adm-p-precio').value = "";
     document.getElementById('adm-p-stock').value = "";
+    document.getElementById('adm-nueva-cat').value = "";
     document.getElementById('adm-p-tallas').value = "";
     document.getElementById('adm-p-tipo-opc').value = "ninguna";
     document.getElementById('adm-p-opciones').value = "";
@@ -685,9 +708,11 @@ window.cargarProductoParaEditar = function(id) {
     document.getElementById('titulo-form-admin').innerText = "EDITANDO: " + p.nombre.toUpperCase();
     document.getElementById('adm-p-nombre').value = p.nombre;
     document.getElementById('adm-p-desc').value = p.desc;
+    document.getElementById('adm-p-badge').value = p.badge || "";
     document.getElementById('adm-p-precio').value = p.precio;
     document.getElementById('adm-p-stock').value = p.stock;
     document.getElementById('adm-p-cat').value = p.categoria;
+    document.getElementById('adm-nueva-cat').value = "";
     document.getElementById('adm-p-tallas').value = p.tallas ? p.tallas.join(', ') : "";
     document.getElementById('adm-p-tipo-opc').value = p.tipoOpcion || "ninguna";
     document.getElementById('adm-p-opciones').value = p.opciones ? p.opciones.join(', ') : "";
@@ -696,7 +721,7 @@ window.cargarProductoParaEditar = function(id) {
 };
 
 window.eliminarProductoAdmin = function(id) {
-    if(confirm("¿Seguro que deseas eliminar este producto de la lista?")) {
+    if(confirm("¿Seguro que deseas eliminar este producto?")) {
         listaProductosYakuza = listaProductosYakuza.filter(x => x.id !== id);
         renderizarTarjetasAdmin();
     }
@@ -715,7 +740,7 @@ function renderizarTarjetasAdmin() {
                 </div>
                 <div style="display: flex; gap: 6px;">
                     <button style="background:var(--color-acento); color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="cargarProductoParaEditar(${p.id})">Editar</button>
-                    <button class="btn-icon-danger" onclick="eliminarProductoAdmin(${p.id})" title="Borrar Producto">
+                    <button class="btn-icon-danger" onclick="eliminarProductoAdmin(${p.id})" title="Borrar">
                         <svg width="14" height="14"><use href="#icon-close"></use></svg>
                     </button>
                 </div>
